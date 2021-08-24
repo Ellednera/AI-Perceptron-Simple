@@ -8,7 +8,7 @@ use Carp "croak";
 use utf8;
 binmode STDOUT, ":utf8";
 
-use local::lib;
+require local::lib; # no local::lib in tests, this is also to avoid loading local::lib multiple times
 use Text::CSV qw(csv);
 use Text::Matrix;
 
@@ -20,11 +20,11 @@ A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neuro
 
 =head1 VERSION
 
-Version 1.00
+Version 1.01
 
 =cut
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 # default values
 use constant LEARNING_RATE => 0.05;
@@ -145,7 +145,7 @@ Private methods/subroutines are prefixed with C<_> or C<&_> and they aren't mean
 
 "Synonyms" are placed before the actual subroutines/methods with the actual/technical terminologies. You will see C<...> as the parameters if they are synonyms. So move to the next subroutine/method until you find something like C<\%options> as the parameter or anything that isn't C<...>
 
-=head1 DATASETS STRUCTURE
+=head1 DATASET STRUCTURE
 
 Any field ie columns that will be used for processing must be binary ie. either 0 or 1 only. Your dataset can contain other columns with non-binary data as long as they are not use for the calculation.
 
@@ -155,7 +155,9 @@ I<This module can only process CSV files.>
 
 =head1 PERCEPTRON DATA
 
-The perceptron/neuron data is stored using the C<Storable> module. More file types B<might> be supported in the future.
+The perceptron/neuron data is stored using the C<Storable> module. 
+
+See C<Portability of Nerve Data> section below for more info on some known issues.
 
 =head1 CREATION RELATED SUBROUTINES/METHODS
 
@@ -1018,6 +1020,36 @@ These are the to-do's that B<MIGHT> be done in the future. Don't put too much ho
 =item and something yet to be known...
 
 =back
+
+=head1 KNOWN ISSUES
+
+=head2 Portability of Nerve Data
+
+Take note that the C<Storable> nerve data is not compatible across different versions. See C<Storable>'s documentation for more information.
+
+If you really need to send the nerve data to different computers with different versions of C<Storable> module, do the following:
+
+=over 4
+
+=item Step 1
+
+After the training process is done, use some other modules like C<YAML>, C<JSON>, C<Data::Serialzer>, C<Data::Dumper> etc. to store the nerve data ie serialize it.
+
+=item Step 2
+
+Send the non-C<Storable> nerve data to another computer.
+
+=item Step 3
+
+On the other computer, load ie. deserialize the nerve data into a Perl data structure. Eg. If you used C<YAML> module to store the nerve data in Step 1, then use it to load the nerve data.
+
+=item Step 4
+
+Use the C<Storable> module to save the nerve data. Done :)
+
+=back
+
+Another subroutine might be written to make this easier, probably in the next version :)
 
 =head1 AUTHOR
 

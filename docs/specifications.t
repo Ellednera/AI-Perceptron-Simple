@@ -49,6 +49,12 @@ done_testing;
 #       load_perceptron: [v] revive
 #
 # Version 1.01
+#   [v] fixed currently known issues as much as possible (see 'Changes')
+#       - the "long size integer" problem happens when tests are run in the incorrect sequence, at least that's what 
+#           happened when I tested it on Windows :) Running the test a second time didn't give eny errors.
+#
+# Version 1.02
+#   [] support for more file types (nerve file) for portability
 #   [] refactor codes
 #   [] improve the documentation
 #
