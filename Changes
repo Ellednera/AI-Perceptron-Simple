@@ -2,6 +2,12 @@ Revision history for AI-Perceptron-Simple
 
 The specifications and offline documentation can be found in the "docs" directory
 
+Version 1.01    24 AUGUST 2021
+* Fixed some technical issues
+    * fixed test scripts not run in correct sequence
+        * must be creation -> train -> validate/test
+    * local::lib issue should be fixed by now
+
 Version 1.00    23 AUGUST 2021
 * The following features were implemented over the course of time (see also My::Perceptron v0.04 on github):
     * create perceptron

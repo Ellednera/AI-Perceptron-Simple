@@ -21,9 +21,10 @@ my %WriteMakefileArgs = (
     PREREQ_PM => {
         #'ABC'              => '1.6',
         #'Foo::Bar::Module' => '5.0401',
+        'Storable' => '0',
         'Text::CSV' => '2.01',
-        'Storable' => '3.15',  
         'Text::Matrix' => '1.00',
+        'local::lib' => '0',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'AI-Perceptron-Simple-*' },
