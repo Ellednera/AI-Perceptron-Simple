@@ -54,7 +54,12 @@ done_testing;
 #           happened when I tested it on Windows :) Running the test a second time didn't give eny errors.
 #
 # Version 1.02
-#   [] support for more file types (nerve file) for portability
+#   [v] support for more file types (nerve file) for portability
+#       [v] Storable <--> YAML
+#   [] fix test for display_confusion_matrix
+#       - regex modifier "n" needs perl 5.22 and above, too high
+#       - the test itself is not accurate
+#   [v] minimum perl version required changed to 5.8 due to Test::Output
 #   [] refactor codes
 #   [] improve the documentation
 #
