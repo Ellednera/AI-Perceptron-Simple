@@ -9,7 +9,7 @@ my %WriteMakefileArgs = (
     VERSION_FROM     => 'lib/AI/Perceptron/Simple.pm',
     #ABSTRACT_FROM    => 'lib/AI/Perceptron/Simple.pm',
     LICENSE          => 'artistic_2',
-    MIN_PERL_VERSION => '5.006',
+    MIN_PERL_VERSION => '5.008',
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => '0',
     },
@@ -25,6 +25,7 @@ my %WriteMakefileArgs = (
         'Text::CSV' => '2.01',
         'Text::Matrix' => '1.00',
         'local::lib' => '0',
+        'YAML' => '0',
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'AI-Perceptron-Simple-*' },
