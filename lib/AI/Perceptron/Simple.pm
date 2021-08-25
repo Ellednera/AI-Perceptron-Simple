@@ -20,11 +20,11 @@ A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neuro
 
 =head1 VERSION
 
-Version 1.01
+Version 1.02
 
 =cut
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 # default values
 use constant LEARNING_RATE => 0.05;
@@ -46,7 +46,9 @@ use constant TUNE_DOWN => 0;
         attribs => \@attributes, # dendrites: array ref of header names in csv file to train
     } );
 
-    # training
+    # training - synonyms available
+    $perceptron->tame( ... );
+    $perceptron->exercise( ... );
     $perceptron->train( $training_data_csv, $expected_column_name, $save_nerve_to );
     # or
     $perceptron->train(
@@ -54,7 +56,10 @@ use constant TUNE_DOWN => 0;
         $show_progress, $identifier); # these two parameters must go together
 
 
-    # validating
+    # validating - synonyms available
+    $perceptron->take_lab_test( ... );
+    $perceptron->take_mock_exam( ... );
+    
     # fill results to original file
     $perceptron->validate( { 
         stimuli_validate => $validation_data_csv, 
@@ -69,18 +74,11 @@ use constant TUNE_DOWN => 0;
     } );
 
 
-    # testing, parameters same as validate
-    $perceptron->test( { 
-        stimuli_validate => $testing_data_csv, 
-        predicted_column_index => 4,
-     } );
-    # or        
-    # fill results to a new file
-    $perceptron->test( {
-        stimuli_validate => $testing_data_csv,
-        predicted_column_index => 4,
-        results_write_to => $new_csv
-    } );
+    # testing - synonyms available
+    # see "validate" method, same usage
+    $perceptron->take_real_exam( ... );
+    $perceptron->work_in_real_world( ... );
+    $perceptron->test( ... );
 
 
     # confusion matrix
@@ -104,12 +102,29 @@ use constant TUNE_DOWN => 0;
     } );
 
 
-    # save data of the trained perceptron
+    # saving and loading data of perceptron
+    
     my $nerve_file = "apples.nerve";
+    AI::Perceptron::Simple::preserve( ... );
     AI::Perceptron::Simple::save_perceptron( $perceptron, $nerve_file );
 
     # load data of percpetron for use in actual program
-    my $apple_nerve = AI::Perceptron::Simple::load_perceptron( $nerve_file ); # :)
+    my $apple_nerve = AI::Perceptron::Simple::revive( ... );
+    my $apple_nerve = AI::Perceptron::Simple::load_perceptron( $nerve_file );
+    
+    
+    # for portability of nerve data
+    
+    # save as YAML
+    my $yaml_nerve_file = "pearls.yaml";
+    AI::Perceptron::Simple::preserve_as_YAML ( ... );
+    AI::Perceptron::Simple::save_perceptron_as_YAML ( $perceptron, $yaml_nerve_file );
+    
+    # then transfer "pearls.yaml" to another computer if necessary
+    
+    # load nerve data on the other computer
+    my $pearl_nerve = AI::Perceptron::revive_from_YAML ( ... );
+    my $pearl_nerve = AI::Perceptron::load_perceptron_from_YAML ( $yaml_nerve_file );
 
 =head1 DESCRIPTION
 
@@ -476,7 +491,7 @@ The C<%stimuli_hash> here is the same as the one in the C<_calculate_output> met
 
 C<%stimuli_hash> will be used to determine which dendrite in C<$self> needs to be fine-tuned. As long as the value of any key in C<%stimuli_hash> returns true (1) then that dendrite in C<$self> will be tuned.
 
-Tuning up or down depends on C<$tune_up_or_down> specifed by the C<&_calculate_output> subroutine. The following constants can be used for C<$tune_up_or_down>:
+Tuning up or down depends on C<$tune_up_or_down> specifed by the C<train> method. The following constants can be used for C<$tune_up_or_down>:
 
 =over 4
 
@@ -560,7 +575,7 @@ The default behaviour will write the predicted output into C<stimuli_validate> i
 
 =back
 
-I<*This method will call &_real_validate_or_test to do the actual work.>
+I<*This method will call C<_real_validate_or_test> to do the actual work.>
 
 =cut
 
@@ -980,6 +995,28 @@ sub save_perceptron {
     no Storable;
 }
 
+=head2 preserve_as_YAML ( ... )
+
+The parameters and usage are the same as C<save_perceptron_as_YAML>. See the next subroutine.
+
+=head2 save_perceptron_as_YAML ( $nerve_file )
+
+Saves the C<AI::Perceptron::Simple> object into a C<YAML> file.
+
+=cut
+
+sub preserve_as_YAML {
+    save_perceptron_as_YAML( @_ );
+}
+
+sub save_perceptron_as_YAML {
+    my $self = shift;
+    my $nerve_file = shift;
+    use YAML;
+    YAML::DumpFile( $nerve_file, $self );
+    no YAML;
+}
+
 =head2 revive (...)
 
 The parameters and usage are the same as C<load_perceptron>. See the next subroutine.
@@ -999,6 +1036,29 @@ sub load_perceptron {
     use Storable;
     my $loaded_nerve = retrieve( $nerve_file_to_load );
     no Storable;
+    
+    $loaded_nerve;
+}
+
+=head2 revive_from_YAML (...)
+
+The parameters and usage are the same as C<load_perceptron>. See the next subroutine.
+
+=head2 load_perceptron_from_YAML ( $yaml_nerve_file )
+
+Loads the YAML data and turns it into a C<AI::Perceptron::Simple> object as the return value.
+
+=cut
+
+sub revive_from_YAML {
+    load_perceptron_from_YAML( @_ );
+}
+
+sub load_perceptron_from_YAML {
+    my $nerve_file_to_load = shift;
+    use YAML;
+    my $loaded_nerve = YAML::LoadFile( $nerve_file_to_load );
+    no YAML;
     
     $loaded_nerve;
 }
@@ -1027,29 +1087,15 @@ These are the to-do's that B<MIGHT> be done in the future. Don't put too much ho
 
 Take note that the C<Storable> nerve data is not compatible across different versions. See C<Storable>'s documentation for more information.
 
-If you really need to send the nerve data to different computers with different versions of C<Storable> module, do the following:
+If you really need to send the nerve data to different computers with different versions of C<Storable> module, see the docs for these subroutines: 
 
 =over 4
 
-=item Step 1
+=item C<&preserve_as_YAML> or C<&save_perceptron_as_YAML> for stroring data.
 
-After the training process is done, use some other modules like C<YAML>, C<JSON>, C<Data::Serialzer>, C<Data::Dumper> etc. to store the nerve data ie serialize it.
-
-=item Step 2
-
-Send the non-C<Storable> nerve data to another computer.
-
-=item Step 3
-
-On the other computer, load ie. deserialize the nerve data into a Perl data structure. Eg. If you used C<YAML> module to store the nerve data in Step 1, then use it to load the nerve data.
-
-=item Step 4
-
-Use the C<Storable> module to save the nerve data. Done :)
+=item C<&revive_from_YAML> or C<&load_perceptron_from_YAML> for retrieving the data.
 
 =back
-
-Another subroutine might be written to make this easier, probably in the next version :)
 
 =head1 AUTHOR
 
@@ -1060,9 +1106,6 @@ Raphael Jong Jun Jie, C<< <ellednera at cpan.org> >>
 Please report any bugs or feature requests to C<bug-ai-perceptron-simple at rt.cpan.org>, or through
 the web interface at L<https://rt.cpan.org/NoAuth/ReportBug.html?Queue=AI-Perceptron-Simple>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
-
 
 =head1 SUPPORT
 
