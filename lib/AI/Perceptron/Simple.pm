@@ -9,8 +9,10 @@ use utf8;
 binmode STDOUT, ":utf8";
 
 require local::lib; # no local::lib in tests, this is also to avoid loading local::lib multiple times
-use Text::CSV qw(csv);
+use Text::CSV qw( csv );
 use Text::Matrix;
+use File::Basename qw( basename );
+use List::Util qw( shuffle );
 
 =head1 NAME
 
@@ -20,11 +22,11 @@ A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neuro
 
 =head1 VERSION
 
-Version 1.02
+Version 1.03
 
 =cut
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 # default values
 use constant LEARNING_RATE => 0.05;
@@ -125,15 +127,24 @@ use constant TUNE_DOWN => 0;
     my $pearl_nerve = revive_from_yaml ( ... );
     my $pearl_nerve = load_perceptron_yaml ( $yaml_nerve_file );
 
+
+    # processing data
+    use AI::Perceptron::Simple ":process_data";
+    shuffle_stimuli ( ... )
+    shuffle_data ( ORIGINAL_STIMULI, $new_file_1, $new_file_2, ... );
+    shuffle_data ( $original_stimuli => $new_file_1, $new_file_2, ... );
+
 =head1 EXPORT
 
 None by default.
 
-All the subroutines from C<NERVE DATA RELATED SUBROUTINES> and C<NERVE PORTABILITY RELATED SUBROUTINES> sections are exportable.
+All the subroutines from C<DATA PROCESSING RELATED SUBROUTINES>, C<NERVE DATA RELATED SUBROUTINES> and C<NERVE PORTABILITY RELATED SUBROUTINES> sections are importable through tags or manually specifying them.
 
-Export tags include the following:
+The tags available include the following:
 
 =over 4
+
+=item C<:process_data> - subroutines under C<DATA PROCESSING RELATED SUBROUTINES> section.
 
 =item C<:local_data> - subroutines under C<NERVE DATA RELATED SUBROUTINES> section.
 
@@ -147,10 +158,12 @@ Most of the stuff are OO.
 
 use Exporter qw( import );
 our @EXPORT_OK = qw( 
+    shuffle_data shuffle_stimuli
     preserve save_perceptron revive load_perceptron
     preserve_as_yaml save_perceptron_yaml revive_from_yaml load_perceptron_yaml
 );
 our %EXPORT_TAGS = ( 
+    process_data => [ qw( shuffle_data shuffle_stimuli ) ],
     local_data => [ qw( preserve save_perceptron revive load_perceptron ) ],
     portable_data => [ qw( preserve_as_yaml save_perceptron_yaml revive_from_yaml load_perceptron_yaml ) ],
 );
@@ -194,11 +207,55 @@ The perceptron/neuron data is stored using the C<Storable> module.
 
 See C<Portability of Nerve Data> section below for more info on some known issues.
 
+=head1 DATA PROCESSING RELATED SUBROUTINES
+
+These subroutines can be imported using the tag C<:process_data>.
+
+These subroutines should be called in the procedural way.
+
+=head2 shuffle_stimuli ( ... )
+
+The parameters and usage are the same as C<shuffled_data>. See the next two subroutines.
+
+=head2 shuffle_data ( $original_data => $shuffled_1, $shuffled_2, ... )
+
+=head2 shuffle_data ( ORIGINAL_DATA, $shuffled_1, $shuffled_2, ... )
+
+Shuffles C<$original_data> or C<ORIGINAL_DATA> and saves them to other files.
+
+=cut
+
+sub shuffle_stimuli {
+    shuffle_data( @_ );
+}
+
+sub shuffle_data {
+    my $stimuli = shift or croak "Please specify the original file name";
+    my @shuffled_stimuli_names = @_ 
+        or croak "Please specify the output files for the shuffled data";
+    
+    # copied from _real_validate_or_test
+    # open for shuffling
+    my $aoa = csv (in => $stimuli, encoding => ":encoding(utf-8)");
+    
+    my @aoa;
+    for ( @shuffled_stimuli_names ) {
+        my $attrib_array_ref = shift @$aoa; # 'remove' the header, it's annoying :)
+        @aoa = shuffle( @$aoa ); # this can only process actual array
+        unshift @aoa, $attrib_array_ref; # put back the headers before saving file
+
+        csv( in => \@aoa, out => $_, encoding => ":encoding(utf-8)" ) 
+        and
+        print "Saved shuffled data into ", basename($_), "!\n";;
+
+    }
+}
+
 =head1 CREATION RELATED SUBROUTINES/METHODS
 
 =head2 new ( \%options )
 
-Creates a brand new perceptron and initializes the value of each attribute / densrite aka. weight. Think of it as the thickness or plasticity of the dendrites.
+Creates a brand new perceptron and initializes the value of each attribute / dendrite aka. weight. Think of it as the thickness or plasticity of the dendrites.
 
 For C<%options>, the followings are needed unless mentioned:
 
@@ -1011,11 +1068,9 @@ sub _print_extended_matrix {
 
 =head1 NERVE DATA RELATED SUBROUTINES
 
-This part is about saving the data of the nerve. These subroutines can be exported using the C<:local_data> tag.
+This part is about saving the data of the nerve. These subroutines can be imported using the C<:local_data> tag.
 
 B<The subroutines are to be called in the procedural way>. No checking is done currently.
-
-The subroutines here are not exported in any way whatsoever.
 
 See C<PERCEPTRON DATA> and C<KNOWN ISSUES> sections for more details on the subroutines in this section.
 
@@ -1067,7 +1122,7 @@ sub load_perceptron {
 
 =head1 NERVE PORTABILITY RELATED SUBROUTINES
 
-These subroutines can be exported using the C<:portable_data> tag.
+These subroutines can be imported using the C<:portable_data> tag.
 
 The file type currently supported is YAML. Please be careful with the data as you won't want the nerve data accidentally modified.
 
@@ -1140,7 +1195,7 @@ These are the to-do's that B<MIGHT> be done in the future. Don't put too much ho
 
 =head2 Portability of Nerve Data
 
-Take note that the C<Storable> nerve data is not compatible across different versions. See C<Storable>'s documentation for more information.
+Take note that the C<Storable> nerve data is not compatible across different versions.
 
 If you really need to send the nerve data to different computers with different versions of C<Storable> module, see the docs of the following subroutines: 
 
@@ -1194,7 +1249,7 @@ Besiyata d'shmaya, Wikipedia
 
 =head1 SEE ALSO
 
-AI::Perceptron, Text::Matrix
+AI::Perceptron, Text::Matrix, YAML
 
 =head1 LICENSE AND COPYRIGHT
 
