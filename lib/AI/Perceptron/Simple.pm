@@ -234,12 +234,11 @@ sub shuffle_data {
     my @shuffled_stimuli_names = @_ 
         or croak "Please specify the output files for the shuffled data";
     
-    # copied from _real_validate_or_test
-    # open for shuffling
-    my $aoa = csv (in => $stimuli, encoding => ":encoding(utf-8)");
-    
     my @aoa;
     for ( @shuffled_stimuli_names ) {
+        # copied from _real_validate_or_test
+        # open for shuffling
+        my $aoa = csv (in => $stimuli, encoding => ":encoding(utf-8)");
         my $attrib_array_ref = shift @$aoa; # 'remove' the header, it's annoying :)
         @aoa = shuffle( @$aoa ); # this can only process actual array
         unshift @aoa, $attrib_array_ref; # put back the headers before saving file
