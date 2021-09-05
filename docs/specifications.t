@@ -65,11 +65,17 @@ done_testing;
 #       [v] refactored &display_confusion_matrix
 #   [v] improve the documentation
 #
-# Version 0.0x
-#   -add more useful data to the confusion matrix
-#   -implement shuffling system
+# Version 1.03
+#   [v] data processing: shuffle data
+#   [] add more useful data to the confusion matrix
+#       [] sum of column and rows to make it look more classic :)
 #
-# ...
+# Version ?.??
+#   -implement shuffling system into training stage
+#   -smart tuning feature
+#   -splitting data? k-fold?
+#   -...
+#
 #
 ############ "flow" of the codes ############
 
