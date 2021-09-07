@@ -108,6 +108,33 @@ for $piece ( @pieces ) {
     like ( $@, qr/zero_as one_as/, "Both keys not found" );
 }
 
+subtest "More stats" => sub {
+
+    my %c_matrix_more_stats = $perceptron->get_confusion_matrix( { 
+            full_data_file => TEST_FILE, 
+            actual_output_header => "brand",
+            predicted_output_header => "predicted",
+            more_stats => 1,
+        } );
+
+    like ( $c_matrix_more_stats{ precision }, qr/66.66/, "Precision seems correct to me" );
+    like ( $c_matrix_more_stats{ specificity }, qr/80/, "Specificity seems correct to me" );
+    like ( $c_matrix_more_stats{ F1_Score }, qr/66.66/, "F1 Score seems correct to me" );
+
+    my $piece;
+    my @pieces = ('A: ', 'P: ', 'actual', 'predicted', 'entries', 'Accuracy', 'Sensitivity', 'MP520', 'Yi Lin', "Precision", "Specificity", "F1 Score");
+
+    for $piece ( @pieces ) {
+        stdout_like {
+        
+            ok ( $perceptron->display_exam_results( \%c_matrix_more_stats, { zero_as => "MP520", one_as => "Yi Lin"  } ),
+                "display_exam_results is working");
+            
+        } qr /(?:$piece)/, "$piece displayed";
+
+    }
+};
+
 done_testing;
 
 # besiyata d'shmaya
