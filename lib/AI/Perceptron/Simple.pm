@@ -793,7 +793,7 @@ The parameters and usage are the same as C<get_confusion_matrix>. See the next m
 
 Returns the confusion matrix in the form of a hash. The hash will contain these keys: C<true_positive>, C<true_negative>, C<false_positive>, C<false_negative>, C<accuracy>, C<sensitivity>. More stats like C<precision>, C<specificity> and C<F1_Score> can be obtain by setting the optional C<more_stats> key to C<1>.
 
-Take note that the C<accuracy> and C<sensitivity> are in percentage (%) in decimal (if any).
+If you are trying to manipulate the confusion matrix hash or something, take note that all the stats are in percentage (%) in decimal (if any) except the total entries.
 
 For C<%options>, the followings are needed unless mentioned:
 
@@ -821,7 +821,9 @@ The binary values are treated as follows:
 
 =item more_stats => 1
 
-Optional. Setting it to C<1> will process more stats that are usually not so important eg. C<precision>, C<specificity> and C<F1_Score>
+Optional.
+
+Setting it to C<1> will process more stats that are usually not so important eg. C<precision>, C<specificity> and C<F1_Score>
 
 =back
 
