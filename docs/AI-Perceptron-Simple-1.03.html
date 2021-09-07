@@ -535,7 +535,7 @@
 
 <p>Returns the confusion matrix in the form of a hash. The hash will contain these keys: <code>true_positive</code>, <code>true_negative</code>, <code>false_positive</code>, <code>false_negative</code>, <code>accuracy</code>, <code>sensitivity</code>. More stats like <code>precision</code>, <code>specificity</code> and <code>F1_Score</code> can be obtain by setting the optional <code>more_stats</code> key to <code>1</code>.</p>
 
-<p>Take note that the <code>accuracy</code> and <code>sensitivity</code> are in percentage (%) in decimal (if any).</p>
+<p>If you are trying to manipulate the confusion matrix hash or something, take note that all the stats are in percentage (%) in decimal (if any) except the total entries.</p>
 
 <p>For <code>%options</code>, the followings are needed unless mentioned:</p>
 
@@ -574,7 +574,9 @@
 <dt id="more_stats-1">more_stats =&gt; 1</dt>
 <dd>
 
-<p>Optional. Setting it to <code>1</code> will process more stats that are usually not so important eg. <code>precision</code>, <code>specificity</code> and <code>F1_Score</code></p>
+<p>Optional.</p>
+
+<p>Setting it to <code>1</code> will process more stats that are usually not so important eg. <code>precision</code>, <code>specificity</code> and <code>F1_Score</code></p>
 
 </dd>
 </dl>
