@@ -66,14 +66,19 @@ done_testing;
 #   [v] improve the documentation
 #
 # Version 1.03
-#   [v] data processing: shuffle data
-#   [] add more useful data to the confusion matrix
-#       [] sum of column and rows to make it look more classic :)
+#   [v] data processing: shuffle data + import tag
+#   [v] add more useful data to the confusion matrix
+#       [v] sum of column and rows to make it look more classic :)
+#   [v] optional option to show more stats
+#       [v] precision    [v] specificity    [v] F1 score
 #
 # Version ?.??
+#   -colorise the confusion matrix if option is enabled
 #   -implement shuffling system into training stage
 #   -smart tuning feature
-#   -splitting data? k-fold?
+#   -Data processing: splitting data? k-fold?
+#   -add public interface:
+#       -predict result for a single record of data, typically when a gui is involved
 #   -...
 #
 #

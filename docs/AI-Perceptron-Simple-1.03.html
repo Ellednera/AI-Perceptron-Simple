@@ -71,6 +71,9 @@
       <li><a href="#calculate_total_entries-c_matrix_ref">&amp;_calculate_total_entries ( $c_matrix_ref )</a></li>
       <li><a href="#calculate_accuracy-c_matrix_ref">&amp;_calculate_accuracy ( $c_matrix_ref )</a></li>
       <li><a href="#calculate_sensitivity-c_matrix_ref">&amp;_calculate_sensitivity ( $c_matrix_ref )</a></li>
+      <li><a href="#calculate_precision-c_matrix_ref">&amp;_calculate_precision ( $c_matrix_ref )</a></li>
+      <li><a href="#calculate_specificity-c_matrix_ref">&amp;_calculate_specificity ( $c_matrix_ref )</a></li>
+      <li><a href="#calculate_f1_score-c_matrix_ref">&amp;_calculate_f1_score ( $c_matrix_ref )</a></li>
       <li><a href="#display_exam_results">display_exam_results ( ... )</a></li>
       <li><a href="#display_confusion_matrix-confusion_matrix-labels">display_confusion_matrix ( \%confusion_matrix, \%labels )</a></li>
       <li><a href="#build_matrix-c_matrix-labels">&amp;_build_matrix ( $c_matrix, $labels )</a></li>
@@ -169,7 +172,8 @@
     my %c_matrix = $perceptron-&gt;get_confusion_matrix( { 
         full_data_file =&gt; $file_csv, 
         actual_output_header =&gt; $header_name,
-        predicted_output_header =&gt; $predicted_header_name
+        predicted_output_header =&gt; $predicted_header_name,
+        more_stats =&gt; 1, # optional
     } );
 
     # accessing the confusion matrix
@@ -529,7 +533,7 @@
 
 <h2 id="get_confusion_matrix-options">get_confusion_matrix ( \%options )</h2>
 
-<p>Returns the confusion matrix in the form of a hash. The hash will contain these keys: <code>true_positive</code>, <code>true_negative</code>, <code>false_positive</code>, <code>false_negative</code>, <code>accuracy</code>, <code>sensitivity</code>.</p>
+<p>Returns the confusion matrix in the form of a hash. The hash will contain these keys: <code>true_positive</code>, <code>true_negative</code>, <code>false_positive</code>, <code>false_negative</code>, <code>accuracy</code>, <code>sensitivity</code>. More stats like <code>precision</code>, <code>specificity</code> and <code>F1_Score</code> can be obtain by setting the optional <code>more_stats</code> key to <code>1</code>.</p>
 
 <p>Take note that the <code>accuracy</code> and <code>sensitivity</code> are in percentage (%) in decimal (if any).</p>
 
@@ -552,9 +556,6 @@
 <dt id="predicted_output_header-predicted_column_name">predicted_output_header =&gt; $predicted_column_name</dt>
 <dd>
 
-</dd>
-</dl>
-
 <p>The binary values are treated as follows:</p>
 
 <dl>
@@ -565,6 +566,15 @@
 </dd>
 <dt id="is-positive"><code>1</code> is positive</dt>
 <dd>
+
+</dd>
+</dl>
+
+</dd>
+<dt id="more_stats-1">more_stats =&gt; 1</dt>
+<dd>
+
+<p>Optional. Setting it to <code>1</code> will process more stats that are usually not so important eg. <code>precision</code>, <code>specificity</code> and <code>F1_Score</code></p>
 
 </dd>
 </dl>
@@ -585,13 +595,25 @@
 
 <p>Calculates and adds the data for the <code>sensitivity</code> key in the confusion matrix hash.</p>
 
+<h2 id="calculate_precision-c_matrix_ref">&amp;_calculate_precision ( $c_matrix_ref )</h2>
+
+<p>Calculates and adds the data for the <code>precision</code> key in the confusion matrix hash.</p>
+
+<h2 id="calculate_specificity-c_matrix_ref">&amp;_calculate_specificity ( $c_matrix_ref )</h2>
+
+<p>Calculates and adds the data for the <code>specificity</code> key in the confusion matrix hash.</p>
+
+<h2 id="calculate_f1_score-c_matrix_ref">&amp;_calculate_f1_score ( $c_matrix_ref )</h2>
+
+<p>Calculates and adds the data for the <code>F1_Score</code> key in the confusion matrix hash.</p>
+
 <h2 id="display_exam_results">display_exam_results ( ... )</h2>
 
 <p>The parameters are the same as <code>display_confusion_matrix</code>. See the next method.</p>
 
 <h2 id="display_confusion_matrix-confusion_matrix-labels">display_confusion_matrix ( \%confusion_matrix, \%labels )</h2>
 
-<p>Display the confusion matrix.</p>
+<p>Display the confusion matrix. If <code>%confusion_matrix</code> has <code>more_stats</code> elements, it will display them if they exists. The default elements ie <code>accuracy</code> and <code>sensitivity</code> must be present, while the rest can be absent.</p>
 
 <p><code>%confusion_matrix</code> is the same confusion matrix returned by the <code>get_confusion_matrix</code> method.</p>
 
