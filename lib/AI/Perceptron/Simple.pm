@@ -86,7 +86,8 @@ use constant TUNE_DOWN => 0;
     my %c_matrix = $perceptron->get_confusion_matrix( { 
         full_data_file => $file_csv, 
         actual_output_header => $header_name,
-        predicted_output_header => $predicted_header_name
+        predicted_output_header => $predicted_header_name,
+        more_stats => 1, # optional
     } );
 
     # accessing the confusion matrix
@@ -790,7 +791,7 @@ The parameters and usage are the same as C<get_confusion_matrix>. See the next m
 
 =head2 get_confusion_matrix ( \%options )
 
-Returns the confusion matrix in the form of a hash. The hash will contain these keys: C<true_positive>, C<true_negative>, C<false_positive>, C<false_negative>, C<accuracy>, C<sensitivity>.
+Returns the confusion matrix in the form of a hash. The hash will contain these keys: C<true_positive>, C<true_negative>, C<false_positive>, C<false_negative>, C<accuracy>, C<sensitivity>. More stats like C<precision>, C<specificity> and C<F1_Score> can be obtain by setting the optional C<more_stats> key to C<1>.
 
 Take note that the C<accuracy> and C<sensitivity> are in percentage (%) in decimal (if any).
 
@@ -808,8 +809,6 @@ Make sure that you don't do anything to the actual and predicted output in this 
 
 =item predicted_output_header => $predicted_column_name
 
-=back
-
 The binary values are treated as follows:
 
 =over 4
@@ -817,6 +816,12 @@ The binary values are treated as follows:
 =item C<0> is negative
 
 =item C<1> is positive
+
+=back
+
+=item more_stats => 1
+
+Optional. Setting it to C<1> will process more stats that are usually not so important eg. C<precision>, C<specificity> and C<F1_Score>
 
 =back
 
@@ -850,6 +855,7 @@ sub _collect_stats {
     my $file = $info->{ full_data_file };
     my $actual_header = $info->{ actual_output_header };
     my $predicted_header = $info->{ predicted_output_header };
+    my $more_stats = defined ( $info->{ more_stats } ) ? 1 : 0;
     
     my %c_matrix = ( 
         true_positive => 0, true_negative => 0, false_positive => 0, false_negative => 0,
@@ -907,6 +913,14 @@ sub _collect_stats {
     
     _calculate_accuracy( \%c_matrix );
     
+    if ( $more_stats == 1 ) {
+        _calculate_precision( \%c_matrix );
+        
+        _calculate_specificity( \%c_matrix );
+        
+        _calculate_f1_score( \%c_matrix );
+    }
+    
     %c_matrix;
 }
 
@@ -961,13 +975,58 @@ sub _calculate_sensitivity {
     # no need to return anything, we're using ref
 }
 
+=head2 &_calculate_precision ( $c_matrix_ref )
+
+Calculates and adds the data for the C<precision> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_precision {
+    my $c_matrix = shift;
+    
+    my $numerator = $c_matrix->{ true_positive };
+    my $denominator = $numerator + $c_matrix->{ false_positive };
+    
+    $c_matrix->{ precision } = $numerator / $denominator * 100;
+}
+
+=head2 &_calculate_specificity ( $c_matrix_ref )
+
+Calculates and adds the data for the C<specificity> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_specificity {
+    my $c_matrix = shift;
+    
+    my $numerator = $c_matrix->{ true_negative };
+    my $denominator = $numerator + $c_matrix->{ false_positive };
+    
+    $c_matrix->{ specificity } = $numerator / $denominator * 100;
+}
+
+=head2 &_calculate_f1_score ( $c_matrix_ref )
+
+Calculates and adds the data for the C<F1_Score> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_f1_score {
+    my $c_matrix = shift;
+    
+    my $numerator = 2 * $c_matrix->{ true_positive };
+    my $denominator = $numerator + $c_matrix->{ false_positive } + $c_matrix->{ false_positive };
+    
+    $c_matrix->{ F1_Score } = $numerator / $denominator * 100;
+}
+
 =head2 display_exam_results ( ... )
 
 The parameters are the same as C<display_confusion_matrix>. See the next method.
 
 =head2 display_confusion_matrix ( \%confusion_matrix, \%labels ) 
 
-Display the confusion matrix.
+Display the confusion matrix. If C<%confusion_matrix> has C<more_stats> elements, it will display them if they exists. The default elements ie C<accuracy> and C<sensitivity> must be present, while the rest can be absent.
 
 C<%confusion_matrix> is the same confusion matrix returned by the C<get_confusion_matrix> method.
 
@@ -1024,12 +1083,20 @@ sub _build_matrix {
 
     my ( $c_matrix, $labels ) = @_;
 
-    my $predicted_columns = [ "P: ".$labels->{ zero_as }, "P: ".$labels->{ one_as } ];
-    my $actual_rows = [ "A: ".$labels->{ zero_as }, "A: ".$labels->{ one_as }];
+    my $predicted_columns = [ "P: ".$labels->{ zero_as }, "P: ".$labels->{ one_as }, "Sum" ];
+    my $actual_rows = [ "A: ".$labels->{ zero_as }, "A: ".$labels->{ one_as }, "Sum"];
+    
+    # row sum
+    my $actual_0_sum = $c_matrix->{ true_negative } + $c_matrix->{ false_positive };
+    my $actual_1_sum = $c_matrix->{ false_negative } + $c_matrix->{ true_positive };
+    # column sum
+    my $predicted_0_sum = $c_matrix->{ true_negative } + $c_matrix->{ false_negative };
+    my $predicted_1_sum = $c_matrix->{ false_positive } + $c_matrix->{ true_positive };
     
     my $data = [ 
-        [ $c_matrix->{ true_negative },  $c_matrix->{ false_positive } ],
-        [ $c_matrix->{ false_negative }, $c_matrix->{ true_positive } ]
+        [ $c_matrix->{ true_negative },  $c_matrix->{ false_positive }, $actual_0_sum ],
+        [ $c_matrix->{ false_negative }, $c_matrix->{ true_positive }, $actual_1_sum ],
+        [ $predicted_0_sum, $predicted_1_sum, $c_matrix->{ total_entries } ],
     ];
     my $matrix = Text::Matrix->new(
         rows => $actual_rows,
@@ -1062,6 +1129,10 @@ sub _print_extended_matrix {
     print "Total of ", $c_matrix->{ total_entries } , " entries\n";
     print "  Accuracy: $c_matrix->{ accuracy } %\n";
     print "  Sensitivity: $c_matrix->{ sensitivity } %\n";
+    # more stats
+    print "  Precision: $c_matrix->{ precision } %\n" if exists $c_matrix->{ precision };
+    print "  Specificity: $c_matrix->{ specificity } %\n" if exists $c_matrix->{ specificity };
+    print "  F1 Score: $c_matrix->{ F1_Score } %\n" if exists $c_matrix->{ F1_Score };
     print "~~" x24, "\n";
 }
 
