@@ -2,16 +2,15 @@ Revision history for AI-Perceptron-Simple
 
 The specifications and offline documentation can be found in the "docs" directory
 
-Version 1.03    8 SEPTEMBER 2021
+Version 1.03    9 SEPTEMBER 2021
 * data processing subroutine available:
     * shuffle data
     * added import tag ":process_data"
 * added more useful data to the confusion matrix:
     * sum of column and rows to make it look more classic :)
     * more_stats option to show more stats:
-        * precision
-        * specificity
-        * F1 score
+        * precision, specificity, F1 score, negative predicted value, false negative rate, false positive rate
+        * false discovery rate, false omission rate, balanced accuracy
 
 Version 1.02    26 AUGUST 2021
 * minimum perl version changed to 5.8.1 due to YAML
