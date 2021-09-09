@@ -921,6 +921,14 @@ sub _collect_stats {
         _calculate_specificity( \%c_matrix );
         
         _calculate_f1_score( \%c_matrix );
+        
+        # unimplemented, some more left
+        _calculate_negative_predicted_value( \%c_matrix ); #
+        _calculate_false_negative_rate( \%c_matrix ); #
+        _calculate_false_positive_rate( \%c_matrix ); #
+        _calculate_false_discovery_rate( \%c_matrix ); #
+        _calculate_false_omission_rate( \%c_matrix ); #
+        _calculate_balanced_accuracy( \%c_matrix ); #
     }
     
     %c_matrix;
@@ -1017,9 +1025,99 @@ sub _calculate_f1_score {
     my $c_matrix = shift;
     
     my $numerator = 2 * $c_matrix->{ true_positive };
-    my $denominator = $numerator + $c_matrix->{ false_positive } + $c_matrix->{ false_positive };
+    my $denominator = $numerator + $c_matrix->{ false_positive } + $c_matrix->{ false_negative };
     
     $c_matrix->{ F1_Score } = $numerator / $denominator * 100;
+}       
+
+=head2  &_calculate_negative_predicted_value( $c_matrix_ref )
+
+Calculates and adds the data for the C<negative_predicted_value> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_negative_predicted_value {
+    my $c_matrix = shift;
+    
+    my $numerator = $c_matrix->{ true_negative };
+    my $denominator = $numerator + $c_matrix->{ false_negative };
+    
+    $c_matrix->{ negative_predicted_value } = $numerator / $denominator * 100;
+}
+
+=head2  &_calculate_false_negative_rate( $c_matrix_ref )
+
+Calculates and adds the data for the C<false_negative_rate> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_false_negative_rate {
+    my $c_matrix = shift;
+    
+    my $numerator = $c_matrix->{ false_negative };
+    my $denominator = $numerator + $c_matrix->{ true_positive };
+    
+    $c_matrix->{ false_negative_rate } = $numerator / $denominator * 100;
+}
+
+=head2  &_calculate_false_positive_rate( $c_matrix_ref )
+
+Calculates and adds the data for the C<false_positive_rate> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_false_positive_rate {
+    my $c_matrix = shift;
+    
+    my $numerator = $c_matrix->{ false_positive };
+    my $denominator = $numerator + $c_matrix->{ true_negative };
+    
+    $c_matrix->{ false_positive_rate } = $numerator / $denominator * 100;
+}
+
+=head2  &_calculate_false_discovery_rate( $c_matrix_ref )
+
+Calculates and adds the data for the C<false_discovery_rate> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_false_discovery_rate {
+    my $c_matrix = shift;
+    
+    my $numerator = $c_matrix->{ false_positive };
+    my $denominator = $numerator + $c_matrix->{ true_positive };
+    
+    $c_matrix->{ false_discovery_rate } = $numerator / $denominator * 100;
+}
+
+=head2  &_calculate_false_omission_rate( $c_matrix_ref )
+
+Calculates and adds the data for the C<false_omission_rate> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_false_omission_rate {
+    my $c_matrix = shift;
+    
+    my $numerator = $c_matrix->{ false_negative };
+    my $denominator = $numerator + $c_matrix->{ true_negative };
+    
+    $c_matrix->{ false_omission_rate } = $numerator / $denominator * 100;
+}
+
+=head2  &_calculate_balanced_accuracy( $c_matrix_ref )
+
+Calculates and adds the data for the C<balanced_accuracy> key in the confusion matrix hash.
+
+=cut
+
+sub _calculate_balanced_accuracy {
+    my $c_matrix = shift;
+    
+    my $numerator = $c_matrix->{ sensitivity } + $c_matrix->{ specificity };
+    my $denominator = 2;
+    
+    $c_matrix->{ balanced_accuracy } = $numerator / $denominator; # numerator already in %
 }
 
 =head2 display_exam_results ( ... )
@@ -1135,6 +1233,12 @@ sub _print_extended_matrix {
     print "  Precision: $c_matrix->{ precision } %\n" if exists $c_matrix->{ precision };
     print "  Specificity: $c_matrix->{ specificity } %\n" if exists $c_matrix->{ specificity };
     print "  F1 Score: $c_matrix->{ F1_Score } %\n" if exists $c_matrix->{ F1_Score };
+    print "  Negative Predicted Value: $c_matrix->{ negative_predicted_value } %\n" if exists $c_matrix->{ negative_predicted_value };
+    print "  False Negative Rate: $c_matrix->{ false_negative_rate } %\n" if exists $c_matrix->{ false_negative_rate };
+    print "  False Positive Rate: $c_matrix->{ false_positive_rate } %\n" if exists $c_matrix->{ false_positive_rate };
+    print "  False Discovery Rate: $c_matrix->{ false_discovery_rate } %\n" if exists $c_matrix->{ false_discovery_rate };
+    print "  False Omission Rate: $c_matrix->{ false_omission_rate } %\n" if exists $c_matrix->{ false_omission_rate };
+    print "  Balanced Accuracy: $c_matrix->{ balanced_accuracy } %\n" if exists $c_matrix->{ balanced_accuracy };
     print "~~" x24, "\n";
 }
 
