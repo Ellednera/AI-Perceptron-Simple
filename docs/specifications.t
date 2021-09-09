@@ -71,14 +71,19 @@ done_testing;
 #       [v] sum of column and rows to make it look more classic :)
 #   [v] optional option to show more stats
 #       [v] precision    [v] specificity    [v] F1 score
+#       [v] negative_predicted_value    [v] false_negative_rate    [v] false_positive_rate
+#       [v] false_discovery_rate    [v] false_omission_rate    [v] balanced_accuracy
+#
+# Version 1.04
+#   -colorise the confusion matrix if option is enabled
+#   -add public function:
+#       -predict result from non-csv input (single row), might be useful when gui is involved
+#   -add a simple tutorial
+#   -smart tuning feature: automatically increase/decrease learning_rate in multiples in training stage
 #
 # Version ?.??
-#   -colorise the confusion matrix if option is enabled
-#   -implement shuffling system into training stage
-#   -smart tuning feature
-#   -Data processing: splitting data? k-fold?
-#   -add public interface:
-#       -predict result for a single record of data, typically when a gui is involved
+#   ? implement shuffling system into training stage, bulk data processing   
+#   ? Data processing: splitting data, k-fold
 #   -...
 #
 #
