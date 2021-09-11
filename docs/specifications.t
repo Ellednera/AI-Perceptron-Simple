@@ -75,6 +75,7 @@ done_testing;
 #       [v] false_discovery_rate    [v] false_omission_rate    [v] balanced_accuracy
 #
 # Version 1.04
+#   -change die to croak for file opening
 #   -colorise the confusion matrix if option is enabled
 #   -add public function:
 #       -predict result from non-csv input (single row), might be useful when gui is involved
