@@ -22,11 +22,11 @@ A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neuro
 
 =head1 VERSION
 
-Version 1.03
+Version 1.04
 
 =cut
 
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 
 # default values
 use constant LEARNING_RATE => 0.05;
@@ -42,10 +42,10 @@ use constant TUNE_DOWN => 0;
 
     # create a new nerve / neuron / perceptron
     $perceptron = AI::Perceptron::Simple->new( {
-        initial_value => $any_value_that_makes_sense, # size of each dendrite :)
+        initial_value => $size_of_each_dendrite,
         learning_rate => 0.3, # optional
         threshold => 0.85, # optional
-        attribs => \@attributes, # dendrites
+        attribs => \@dendrites,
     } );
 
     # train
@@ -246,7 +246,7 @@ sub shuffle_data {
 
         csv( in => \@aoa, out => $_, encoding => ":encoding(utf-8)" ) 
         and
-        print "Saved shuffled data into ", basename($_), "!\n";;
+        print "Saved shuffled data into ", basename($_), "!\n";
 
     }
 }
@@ -437,7 +437,7 @@ sub train {
     
     # CSV processing is all according to the documentation of Text::CSV
     open my $data_fh, "<:encoding(UTF-8)", $stimuli_train_csv 
-        or die "Can't open $stimuli_train_csv: $!";
+        or croak "Can't open $stimuli_train_csv: $!";
     
     my $csv = Text::CSV->new( {auto_diag => 1, binary => 1} );
     
@@ -753,7 +753,7 @@ sub _fill_predicted_values {
 
     # CSV processing is all according to the documentation of Text::CSV
     open my $data_fh, "<:encoding(UTF-8)", $stimuli_validate 
-        or die "Can't open $stimuli_validate: $!";
+        or croak "Can't open $stimuli_validate: $!";
     
     my $csv = Text::CSV->new( {auto_diag => 1, binary => 1} );
     
@@ -866,7 +866,7 @@ sub _collect_stats {
     
     # CSV processing is all according to the documentation of Text::CSV
     open my $data_fh, "<:encoding(UTF-8)", $file
-        or die "Can't open $file: $!";
+        or croak "Can't open $file: $!";
     
     my $csv = Text::CSV->new( {auto_diag => 1, binary => 1} );
     
@@ -1254,7 +1254,7 @@ See C<PERCEPTRON DATA> and C<KNOWN ISSUES> sections for more details on the subr
 
 The parameters and usage are the same as C<save_perceptron>. See the next subroutine.
 
-=head2 save_perceptron ( $nerve_file )
+=head2 save_perceptron ( $nerve, $nerve_file )
 
 Saves the C<AI::Perceptron::Simple> object into a C<Storable> file. There shouldn't be a need to call this method manually since after every training 
 process this will be called automatically.
@@ -1306,7 +1306,7 @@ The file type currently supported is YAML. Please be careful with the data as yo
 
 The parameters and usage are the same as C<save_perceptron_yaml>. See the next subroutine.
 
-=head2 save_perceptron_yaml ( $nerve_file )
+=head2 save_perceptron_yaml ( $nerve, $yaml_nerve_file )
 
 Saves the C<AI::Perceptron::Simple> object into a C<YAML> file.
 
