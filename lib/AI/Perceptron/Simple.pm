@@ -41,7 +41,7 @@ use constant TUNE_DOWN => 0;
     use AI::Perceptron::Simple qw(...);
 
     # create a new nerve / neuron / perceptron
-    $perceptron = AI::Perceptron::Simple->new( {
+    $nerve = AI::Perceptron::Simple->new( {
         initial_value => $size_of_each_dendrite,
         learning_rate => 0.3, # optional
         threshold => 0.85, # optional
@@ -49,27 +49,27 @@ use constant TUNE_DOWN => 0;
     } );
 
     # train
-    $perceptron->tame( ... );
-    $perceptron->exercise( ... );
-    $perceptron->train( $training_data_csv, $expected_column_name, $save_nerve_to );
+    $nerve->tame( ... );
+    $nerve->exercise( ... );
+    $nerve->train( $training_data_csv, $expected_column_name, $save_nerve_to );
     # or
-    $perceptron->train(
+    $nerve->train(
         $training_data_csv, $expected_column_name, $save_nerve_to, 
         $show_progress, $identifier); # these two parameters must go together
 
 
     # validate
-    $perceptron->take_lab_test( ... );
-    $perceptron->take_mock_exam( ... );
+    $nerve->take_lab_test( ... );
+    $nerve->take_mock_exam( ... );
 
     # fill results to original file
-    $perceptron->validate( { 
+    $nerve->validate( { 
         stimuli_validate => $validation_data_csv, 
         predicted_column_index => 4,
      } );
     # or        
     # fill results to a new file
-    $perceptron->validate( {
+    $nerve->validate( {
         stimuli_validate => $validation_data_csv,
         predicted_column_index => 4,
         results_write_to => $new_csv
@@ -77,13 +77,13 @@ use constant TUNE_DOWN => 0;
 
 
     # test - see "validate" method, same usage
-    $perceptron->take_real_exam( ... );
-    $perceptron->work_in_real_world( ... );
-    $perceptron->test( ... );
+    $nerve->take_real_exam( ... );
+    $nerve->work_in_real_world( ... );
+    $nerve->test( ... );
 
 
     # confusion matrix
-    my %c_matrix = $perceptron->get_confusion_matrix( { 
+    my %c_matrix = $nerve->get_confusion_matrix( { 
         full_data_file => $file_csv, 
         actual_output_header => $header_name,
         predicted_output_header => $predicted_header_name,
@@ -98,7 +98,7 @@ use constant TUNE_DOWN => 0;
     }
 
     # output to console
-    $perceptron->display_confusion_matrix( \%c_matrix, { 
+    $nerve->display_confusion_matrix( \%c_matrix, { 
         zero_as => "bad apples", # cat  milk   green  etc.
         one_as => "good apples", # dog  honey  pink   etc.
     } );
@@ -110,7 +110,7 @@ use constant TUNE_DOWN => 0;
 
     my $nerve_file = "apples.nerve";
     preserve( ... );
-    save_perceptron( $perceptron, $nerve_file );
+    save_perceptron( $nerve, $nerve_file );
 
     # load data of percpetron for use in actual program
     my $apple_nerve = revive( ... );
@@ -122,7 +122,7 @@ use constant TUNE_DOWN => 0;
 
     my $yaml_nerve_file = "pearls.yaml";
     preserve_as_yaml ( ... );
-    save_perceptron_yaml ( $perceptron, $yaml_nerve_file );
+    save_perceptron_yaml ( $nerve, $yaml_nerve_file );
 
     # load nerve data on the other computer
     my $pearl_nerve = revive_from_yaml ( ... );
@@ -1130,7 +1130,7 @@ Display the confusion matrix. If C<%confusion_matrix> has C<more_stats> elements
 
 C<%confusion_matrix> is the same confusion matrix returned by the C<get_confusion_matrix> method.
 
-For C<%labels>, since C<0>'s and C<1>'s won't make much sense as the output in most cases, therefore, the following keys must be specified:
+For C<%labels>, since C<0>'s and C<1>'s won't make much sense as the output labels in most cases, therefore, the following keys must be specified:
 
 =over 4
 
@@ -1341,6 +1341,7 @@ sub revive_from_yaml {
 sub load_perceptron_yaml {
     my $nerve_file_to_load = shift;
     use YAML;
+    local $YAML::LoadBlessed = 1;
     my $loaded_nerve = YAML::LoadFile( $nerve_file_to_load );
     no YAML;
     
