@@ -133,7 +133,7 @@
     use AI::Perceptron::Simple qw(...);
 
     # create a new nerve / neuron / perceptron
-    $perceptron = AI::Perceptron::Simple-&gt;new( {
+    $nerve = AI::Perceptron::Simple-&gt;new( {
         initial_value =&gt; $size_of_each_dendrite,
         learning_rate =&gt; 0.3, # optional
         threshold =&gt; 0.85, # optional
@@ -141,27 +141,27 @@
     } );
 
     # train
-    $perceptron-&gt;tame( ... );
-    $perceptron-&gt;exercise( ... );
-    $perceptron-&gt;train( $training_data_csv, $expected_column_name, $save_nerve_to );
+    $nerve-&gt;tame( ... );
+    $nerve-&gt;exercise( ... );
+    $nerve-&gt;train( $training_data_csv, $expected_column_name, $save_nerve_to );
     # or
-    $perceptron-&gt;train(
+    $nerve-&gt;train(
         $training_data_csv, $expected_column_name, $save_nerve_to, 
         $show_progress, $identifier); # these two parameters must go together
 
 
     # validate
-    $perceptron-&gt;take_lab_test( ... );
-    $perceptron-&gt;take_mock_exam( ... );
+    $nerve-&gt;take_lab_test( ... );
+    $nerve-&gt;take_mock_exam( ... );
 
     # fill results to original file
-    $perceptron-&gt;validate( { 
+    $nerve-&gt;validate( { 
         stimuli_validate =&gt; $validation_data_csv, 
         predicted_column_index =&gt; 4,
      } );
     # or        
     # fill results to a new file
-    $perceptron-&gt;validate( {
+    $nerve-&gt;validate( {
         stimuli_validate =&gt; $validation_data_csv,
         predicted_column_index =&gt; 4,
         results_write_to =&gt; $new_csv
@@ -169,13 +169,13 @@
 
 
     # test - see &quot;validate&quot; method, same usage
-    $perceptron-&gt;take_real_exam( ... );
-    $perceptron-&gt;work_in_real_world( ... );
-    $perceptron-&gt;test( ... );
+    $nerve-&gt;take_real_exam( ... );
+    $nerve-&gt;work_in_real_world( ... );
+    $nerve-&gt;test( ... );
 
 
     # confusion matrix
-    my %c_matrix = $perceptron-&gt;get_confusion_matrix( { 
+    my %c_matrix = $nerve-&gt;get_confusion_matrix( { 
         full_data_file =&gt; $file_csv, 
         actual_output_header =&gt; $header_name,
         predicted_output_header =&gt; $predicted_header_name,
@@ -190,7 +190,7 @@
     }
 
     # output to console
-    $perceptron-&gt;display_confusion_matrix( \%c_matrix, { 
+    $nerve-&gt;display_confusion_matrix( \%c_matrix, { 
         zero_as =&gt; &quot;bad apples&quot;, # cat  milk   green  etc.
         one_as =&gt; &quot;good apples&quot;, # dog  honey  pink   etc.
     } );
@@ -202,7 +202,7 @@
 
     my $nerve_file = &quot;apples.nerve&quot;;
     preserve( ... );
-    save_perceptron( $perceptron, $nerve_file );
+    save_perceptron( $nerve, $nerve_file );
 
     # load data of percpetron for use in actual program
     my $apple_nerve = revive( ... );
@@ -214,7 +214,7 @@
 
     my $yaml_nerve_file = &quot;pearls.yaml&quot;;
     preserve_as_yaml ( ... );
-    save_perceptron_yaml ( $perceptron, $yaml_nerve_file );
+    save_perceptron_yaml ( $nerve, $yaml_nerve_file );
 
     # load nerve data on the other computer
     my $pearl_nerve = revive_from_yaml ( ... );
@@ -649,7 +649,7 @@
 
 <p><code>%confusion_matrix</code> is the same confusion matrix returned by the <code>get_confusion_matrix</code> method.</p>
 
-<p>For <code>%labels</code>, since <code>0</code>&#39;s and <code>1</code>&#39;s won&#39;t make much sense as the output in most cases, therefore, the following keys must be specified:</p>
+<p>For <code>%labels</code>, since <code>0</code>&#39;s and <code>1</code>&#39;s won&#39;t make much sense as the output labels in most cases, therefore, the following keys must be specified:</p>
 
 <dl>
 
