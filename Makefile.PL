@@ -28,7 +28,17 @@ my %WriteMakefileArgs = (
         'YAML' => '0',
         'File::Basename' => '0',
         'List::Util' => '0',
+        'Term::ANSIColor::WithWin32' => '0',
     },
+    META_MERGE => {
+      resources => {
+        repository => {
+            type => 'git',
+            url => 'git://github.com/Ellednera/AI-Perceptron-Simple.git',
+            web => 'https://github.com/Ellednera/AI-Perceptron-Simple.git',
+        },
+      },
+    },    
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'AI-Perceptron-Simple-*' },
 );

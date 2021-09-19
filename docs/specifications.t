@@ -80,9 +80,7 @@ done_testing;
 #   [v] fixed yaml nerve not loading back as an AI::Perceptron::Simple object
 #
 # Version 1.05
-#   -colorise the confusion matrix if option is enabled
-#       - sum: green
-#       - etc
+#   [v] colorise the confusion matrix if option is enabled
 #   -add public function:
 #       -predict result from non-csv input (single row), might be useful when gui is involved
 #
