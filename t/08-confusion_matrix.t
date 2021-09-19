@@ -140,10 +140,28 @@ subtest "More stats" => sub {
         } qr /(?:$piece)/, "$piece displayed";
 
     }
-    $perceptron->display_exam_results( \%c_matrix_more_stats, { 
-        zero_as => "MP520", 
-        one_as => "Yi Lin"  } );
+    #$perceptron->display_exam_results( \%c_matrix_more_stats, { 
+    #    zero_as => "MP520", 
+    #    one_as => "Yi Lin"  } );
+    
+    for $piece ( @pieces ) {
+        stdout_like {
+        
+            ok ( $perceptron->display_exam_results( \%c_matrix_more_stats, { 
+                    zero_as => "MP520", one_as => "Yi Lin",
+                    colorise => 1  } ),
+                "display_exam_results with color is working");
+            
+        } qr /(?:$piece)/, "$piece displayed";
+
+    }
+    
+    #$perceptron->display_exam_results( \%c_matrix_more_stats, { 
+    #    zero_as => "MP520", one_as => "Yi Lin",
+    #    colorise => 1  } );
 };
+
+
 
 done_testing;
 

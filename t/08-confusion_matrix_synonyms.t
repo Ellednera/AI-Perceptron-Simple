@@ -61,7 +61,6 @@ like ( $c_matrix{ accuracy }, qr/60/, "'illegal' calculation of sensitivity seem
     like ( $@, qr/Something\'s wrong\!/, "Croaked! Found non-binary values in file");
 }
 
-
 my $piece;
 my @pieces = ('A: ', 'P: ', 'actual', 'predicted', 'entries', 'Accuracy', 'Sensitivity', 'MP520', 'Yi Lin');
 
@@ -75,12 +74,11 @@ for $piece ( @pieces ) {
 
 }
 
-
 {
     local $@;
     
     eval {
-        $perceptron->display_exam_results( \%c_matrix, { one_as => "Yi Lin" } );
+        $perceptron->display_confusion_matrix( \%c_matrix, { one_as => "Yi Lin" } );
     };
     
     like ( $@, qr/zero_as/, "Missing keys found: zero_as!" );
@@ -91,7 +89,7 @@ for $piece ( @pieces ) {
     local $@;
     
     eval {
-        $perceptron->display_exam_results( \%c_matrix, { zero_as => "MP520" } );
+        $perceptron->display_confusion_matrix( \%c_matrix, { zero_as => "MP520" } );
     };
     
     like ( $@, qr/one_as/, "Missing keys found: one_as!" );
@@ -102,16 +100,17 @@ for $piece ( @pieces ) {
     local $@;
     
     eval {
-        $perceptron->display_exam_results( \%c_matrix );
+        $perceptron->display_confusion_matrix( \%c_matrix );
     };
     
     like ( $@, qr/zero_as one_as/, "Both keys not found" );
 }
+
 # more_stats enabled
 
 subtest "More stats" => sub {
 
-    my %c_matrix_more_stats = $perceptron->get_confusion_matrix( { 
+    my %c_matrix_more_stats = $perceptron->get_exam_results( { 
             full_data_file => TEST_FILE, 
             actual_output_header => "brand",
             predicted_output_header => "predicted",
@@ -141,10 +140,29 @@ subtest "More stats" => sub {
         } qr /(?:$piece)/, "$piece displayed";
 
     }
-    $perceptron->display_exam_results( \%c_matrix_more_stats, { 
-        zero_as => "MP520", 
-        one_as => "Yi Lin"  } );
+    #$perceptron->display_exam_results( \%c_matrix_more_stats, { 
+    #    zero_as => "MP520", 
+    #    one_as => "Yi Lin"  } );
+    
+    for $piece ( @pieces ) {
+        stdout_like {
+        
+            ok ( $perceptron->display_exam_results( \%c_matrix_more_stats, { 
+                    zero_as => "MP520", one_as => "Yi Lin",
+                    colorise => 1  } ),
+                "display_exam_results with color is working");
+            
+        } qr /(?:$piece)/, "$piece displayed";
+
+    }
+    
+    #$perceptron->display_exam_results( \%c_matrix_more_stats, { 
+    #    zero_as => "MP520", one_as => "Yi Lin",
+    #    colorise => 1  } );
 };
+
+
+
 done_testing;
 
 # besiyata d'shmaya
