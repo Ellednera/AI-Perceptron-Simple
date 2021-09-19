@@ -13,20 +13,19 @@ use Text::CSV qw( csv );
 use Text::Matrix;
 use File::Basename qw( basename );
 use List::Util qw( shuffle );
+use Term::ANSIColor::WithWin32 qw(colored);
 
 =head1 NAME
 
-AI::Perceptron::Simple
-
-A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neurons
+AI::Perceptron::Simple - A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neurons
 
 =head1 VERSION
 
-Version 1.04
+Version 1.05
 
 =cut
 
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 
 # default values
 use constant LEARNING_RATE => 0.05;
@@ -1138,9 +1137,17 @@ For C<%labels>, since C<0>'s and C<1>'s won't make much sense as the output labe
 
 =item one_as => $category_one_name
 
+=item colorise => 1
+
+Optional and experimental.
+
+Setting this to 1 or any true values will colorise some the output for the confusion matrix.
+
+The output is somewhat off at the moment :)
+
 =back
 
-Please take note that non-ascii characters ie. non-English alphabets B<might> cause the output to go off :)
+Please take note that non-ascii characters ie. non-English alphabets and asci colors B<might> cause the output to go off :)
 
 For the C<%labels>, there is no need to enter "actual X", "predicted X" etc. It will be prefixed with C<A: > for actual and C<P: > for the predicted values by default.
 
@@ -1148,24 +1155,28 @@ For the C<%labels>, there is no need to enter "actual X", "predicted X" etc. It 
 
 sub display_exam_results {
 
-    my ( $self, $c_matrix, $labels ) = @_;
+    my ( $self, $c_matrix, $labels_color ) = @_;
     
-    $self->display_confusion_matrix( $c_matrix, $labels );
+    $self->display_confusion_matrix( $c_matrix, $labels_color );
 }
 
 sub display_confusion_matrix {
-    my ( $self, $c_matrix, $labels ) = @_;
+    my ( $self, $c_matrix, $labels_color ) = @_;
     
     #####
     my @missing_keys;
     for ( qw( zero_as one_as ) ) {
-        push @missing_keys, $_ unless exists $labels->{ $_ };
+        push @missing_keys, $_ unless exists $labels_color->{ $_ };
     }
     
     croak "Missing keys: @missing_keys" if @missing_keys;
     #####
     
-    _print_extended_matrix ( _build_matrix( $c_matrix, $labels ) );
+    if ( $labels_color->{ colorise } ) {
+        _print_extended_matrix ( _build_colored_matrix( $c_matrix, $labels_color ) );    
+    } else {
+        _print_extended_matrix ( _build_matrix( $c_matrix, $labels_color ) );
+    }
 
 }
 
@@ -1184,7 +1195,7 @@ sub _build_matrix {
     my ( $c_matrix, $labels ) = @_;
 
     my $predicted_columns = [ "P: ".$labels->{ zero_as }, "P: ".$labels->{ one_as }, "Sum" ];
-    my $actual_rows = [ "A: ".$labels->{ zero_as }, "A: ".$labels->{ one_as }, "Sum"];
+    my $actual_rows = [ "A: ".$labels->{ zero_as }, "A: ".$labels->{ one_as }, "Sum" ];
     
     # row sum
     my $actual_0_sum = $c_matrix->{ true_negative } + $c_matrix->{ false_positive };
@@ -1194,52 +1205,224 @@ sub _build_matrix {
     my $predicted_1_sum = $c_matrix->{ false_positive } + $c_matrix->{ true_positive };
     
     my $data = [ 
-        [ $c_matrix->{ true_negative },  $c_matrix->{ false_positive }, $actual_0_sum ],
-        [ $c_matrix->{ false_negative }, $c_matrix->{ true_positive }, $actual_1_sum ],
-        [ $predicted_0_sum, $predicted_1_sum, $c_matrix->{ total_entries } ],
-    ];
+            [ $c_matrix->{ true_negative },  $c_matrix->{ false_positive }, $actual_0_sum ],
+            [ $c_matrix->{ false_negative }, $c_matrix->{ true_positive }, $actual_1_sum ],
+            [ $predicted_0_sum, $predicted_1_sum, $c_matrix->{ total_entries } ],
+        ];
     my $matrix = Text::Matrix->new(
         rows => $actual_rows,
         columns => $predicted_columns,
         data => $data,
     );
     
-    $matrix, $c_matrix;
+    $matrix, $c_matrix;    
 }
 
-=head2 &_print_extended_matrix ( $matrix, $c_matrix )
+=head2 &_build_colored_matrix ( $c_matrix, $labels_color )
+
+Builds the matrix using C<Text::Matrix> module but with colors.
+
+C<$c_matrix> and C<$labels> are the same as the ones passed to C<display_exam_results> and C<>display_confusion_matrix.
+
+This subroutine will be called if C<colorise> is set to any true value eg. C<1> in $labels_color and it will add some colors to the output.
+
+Returns a list C<( $matrix, $c_matrix )> which can directly be passed to C<_print_extended_matrix>.
+
+=cut
+
+sub _build_colored_matrix {
+
+    my ( $c_matrix, $labels ) = @_; # "colorise" key is present in $labels
+
+    # row sum
+    my $actual_0_sum = $c_matrix->{ true_negative } + $c_matrix->{ false_positive };
+    my $actual_1_sum = $c_matrix->{ false_negative } + $c_matrix->{ true_positive };
+    # column sum
+    my $predicted_0_sum = $c_matrix->{ true_negative } + $c_matrix->{ false_negative };
+    my $predicted_1_sum = $c_matrix->{ false_positive } + $c_matrix->{ true_positive };
+    
+    $actual_0_sum = colored ( $actual_0_sum, "bold green" );
+    $actual_1_sum = colored ( $actual_1_sum, "bold green" );
+    $predicted_0_sum = colored ( $predicted_0_sum, "bold green" );
+    $predicted_1_sum = colored ( $predicted_1_sum, "bold green" );
+    my $total_entries = colored ( $c_matrix->{ total_entries }, "bold green" );
+    
+    my $true_negative = colored( $c_matrix->{ true_negative }, "bold bright_blue" );
+    my $true_positive = colored( $c_matrix->{ true_positive }, "bold bright_blue" );
+    
+    my $false_positive = colored( $c_matrix->{ false_positive }, "bold bright_magenta" );
+    my $false_negative = colored( $c_matrix->{ false_negative }, "bold bright_magenta" );
+    
+    my $data = [
+        [ "", "P: ".$labels->{ zero_as }, "P: ".$labels->{ one_as }, "Sum" ], # headers
+        [ "A: ".$labels->{ zero_as }, $true_negative,  $false_positive, $actual_0_sum ],
+        [ "A: ".$labels->{ one_as }, $false_negative, $true_positive, $actual_1_sum ],
+        [ "Sum", $predicted_0_sum, $predicted_1_sum, $total_entries ],
+    ];
+    
+    #my $data = [ 
+    #    [ $true_negative,  $false_positive, $actual_0_sum ],
+    #    [ $false_negative, $true_positive, $actual_1_sum ],
+    #    [ $predicted_0_sum, $predicted_1_sum, $total_entries],
+    #];
+    
+    #my $predicted_columns = [ "P: ".$labels->{ zero_as }, "P: ".$labels->{ one_as }, "Sum" ];
+    #my $actual_rows = [ "A: ".$labels->{ zero_as }, "A: ".$labels->{ one_as }, "Sum"];
+    
+    my $matrix = Text::Matrix->new(
+        rows => ["", "", "", ""],
+        columns => ["", "", "", ""],
+        #rows => $actual_rows,
+        #columns => $predicted_columns,
+        data => $data,
+    )->body();
+    
+    $matrix, $c_matrix, $labels->{ colorise };
+}
+
+=head2 &_print_extended_matrix ( $matrix, $c_matrix, $colorised )
 
 Extends and outputs the matrix on the screen.
 
 C<$matrix> and C<$c_matrix> are the same as returned by C<&_build_matrix>.
 
+C<$colorised> is optional and only used to check if the matrix is colored.
+
 =cut
 
 sub _print_extended_matrix {
 
-    my ( $matrix, $c_matrix ) = @_;
+    my ( $matrix, $c_matrix, $colorised ) = @_;
+   
+    my $banner_lines = "~~" x24;
+    my $above_equal_50 = "bold bright_green";
+    my $below_50 = "bold bright_cyan";
     
-    print "~~" x24, "\n";
-    print "CONFUSION MATRIX (A:actual  P:predicted)\n";
-    print "~~" x24, "\n";
 
-    print $matrix->matrix();
+    if ( $colorised ) {
+        
+        print colored( $banner_lines, "bold yellow"), "\n";
+        print colored("CONFUSION MATRIX (A:actual  P:predicted)", "bold bright_yellow"), "\n";
+        print colored( $banner_lines, "bold yellow"), "\n";
+        
+        # this is an array ref, see docs for Text::Matrix
+        print @$matrix;
+        #print $matrix->matrix();
+        
+        print colored( $banner_lines, "bold yellow"), "\n";
+        print "Total of ", colored($c_matrix->{ total_entries }, "bold bright_yellow") , " entries\n";
+        print "  Accuracy: ", 
+            $c_matrix->{ accuracy } >= 50 
+            ? colored($c_matrix->{ accuracy }." %", $above_equal_50) 
+            : colored($c_matrix->{ accuracy }." %", $below_50) , "\n";
+            
+        print "  Sensitivity: ",
+            $c_matrix->{ sensitivity } >= 50
+            ? colored($c_matrix->{ sensitivity }." %", $above_equal_50) 
+            : colored($c_matrix->{ sensitivity }." %", $below_50),"\n";
+            
+        # more stats
+        if ( exists $c_matrix->{ precision } ) {
+            
+            print "  Precision: ",
+                $c_matrix->{ precision } >= 50
+                ? colored($c_matrix->{ precision }." %", $above_equal_50) 
+                : colored($c_matrix->{ precision }." %", $below_50),"\n";
+        }
+        
+        if ( exists $c_matrix->{ specificity } ) {
+            
+            print "  Specificity: ",
+                $c_matrix->{ specificity } >= 50
+                ? colored($c_matrix->{ specificity }." %", $above_equal_50) 
+                : colored($c_matrix->{ specificity }." %", $below_50),"\n";
+        }
 
-    print "~~" x24, "\n";
-    print "Total of ", $c_matrix->{ total_entries } , " entries\n";
-    print "  Accuracy: $c_matrix->{ accuracy } %\n";
-    print "  Sensitivity: $c_matrix->{ sensitivity } %\n";
-    # more stats
-    print "  Precision: $c_matrix->{ precision } %\n" if exists $c_matrix->{ precision };
-    print "  Specificity: $c_matrix->{ specificity } %\n" if exists $c_matrix->{ specificity };
-    print "  F1 Score: $c_matrix->{ F1_Score } %\n" if exists $c_matrix->{ F1_Score };
-    print "  Negative Predicted Value: $c_matrix->{ negative_predicted_value } %\n" if exists $c_matrix->{ negative_predicted_value };
-    print "  False Negative Rate: $c_matrix->{ false_negative_rate } %\n" if exists $c_matrix->{ false_negative_rate };
-    print "  False Positive Rate: $c_matrix->{ false_positive_rate } %\n" if exists $c_matrix->{ false_positive_rate };
-    print "  False Discovery Rate: $c_matrix->{ false_discovery_rate } %\n" if exists $c_matrix->{ false_discovery_rate };
-    print "  False Omission Rate: $c_matrix->{ false_omission_rate } %\n" if exists $c_matrix->{ false_omission_rate };
-    print "  Balanced Accuracy: $c_matrix->{ balanced_accuracy } %\n" if exists $c_matrix->{ balanced_accuracy };
-    print "~~" x24, "\n";
+        if ( exists $c_matrix->{ F1_Score } ) {
+            
+            print "  F1 Score: ",
+                $c_matrix->{ F1_Score } >= 50
+                ? colored($c_matrix->{ F1_Score }." %", $above_equal_50) 
+                : colored($c_matrix->{ F1_Score }." %", $below_50),"\n";
+        }
+
+        if ( exists $c_matrix->{ negative_predicted_value } ) {
+            
+            print "  Negative Predicted Value: ",
+                $c_matrix->{ negative_predicted_value } >= 50
+                ? colored($c_matrix->{ negative_predicted_value }." %", $above_equal_50) 
+                : colored($c_matrix->{ negative_predicted_value }." %", $below_50),"\n";
+        }
+
+        if ( exists $c_matrix->{ false_negative_rate } ) {
+            
+            print "  False Negative Rate: ",
+                $c_matrix->{ false_negative_rate } >= 50
+                ? colored($c_matrix->{ false_negative_rate }." %", $above_equal_50) 
+                : colored($c_matrix->{ false_negative_rate }." %", $below_50),"\n";
+        }
+
+        if ( exists $c_matrix->{ false_positive_rate } ) {
+            
+            print "  False Positive Rate: ",
+                $c_matrix->{ false_positive_rate } >= 50
+                ? colored($c_matrix->{ false_positive_rate }." %", $above_equal_50) 
+                : colored($c_matrix->{ false_positive_rate }." %", $below_50),"\n";
+        }
+
+        if ( exists $c_matrix->{ false_discovery_rate } ) {
+            
+            print "  False Discovery Rate: ",
+                $c_matrix->{ false_discovery_rate } >= 50
+                ? colored($c_matrix->{ false_discovery_rate }." %", $above_equal_50) 
+                : colored($c_matrix->{ false_discovery_rate }." %", $below_50),"\n";
+        }
+        
+        if ( exists $c_matrix->{ false_omission_rate } ) {
+            
+            print "  False Omission Rate: ",
+                $c_matrix->{ false_omission_rate } >= 50
+                ? colored($c_matrix->{ false_omission_rate }." %", $above_equal_50) 
+                : colored($c_matrix->{ false_omission_rate }." %", $below_50),"\n";
+        }
+        
+        if ( exists $c_matrix->{ balanced_accuracy } ) {
+            
+            print "  Balanced Accuracy: ",
+                $c_matrix->{ balanced_accuracy } >= 50
+                ? colored($c_matrix->{ balanced_accuracy }." %", $above_equal_50) 
+                : colored($c_matrix->{ balanced_accuracy }." %", $below_50),"\n";
+        }
+
+        print colored( $banner_lines, "yellow"), "\n";
+
+        
+    } else {
+
+        print $banner_lines, "\n";
+        print "CONFUSION MATRIX (A:actual  P:predicted)", "\n";
+        print $banner_lines, "\n";
+    
+        print $matrix->matrix();
+
+        print "~~" x24, "\n";
+        print "Total of ", $c_matrix->{ total_entries } , " entries\n";
+        print "  Accuracy: $c_matrix->{ accuracy } %\n";
+        print "  Sensitivity: $c_matrix->{ sensitivity } %\n";
+        # more stats
+        print "  Precision: $c_matrix->{ precision } %\n" if exists $c_matrix->{ precision };
+        print "  Specificity: $c_matrix->{ specificity } %\n" if exists $c_matrix->{ specificity };
+        print "  F1 Score: $c_matrix->{ F1_Score } %\n" if exists $c_matrix->{ F1_Score };
+        print "  Negative Predicted Value: $c_matrix->{ negative_predicted_value } %\n" if exists $c_matrix->{ negative_predicted_value };
+        print "  False Negative Rate: $c_matrix->{ false_negative_rate } %\n" if exists $c_matrix->{ false_negative_rate };
+        print "  False Positive Rate: $c_matrix->{ false_positive_rate } %\n" if exists $c_matrix->{ false_positive_rate };
+        print "  False Discovery Rate: $c_matrix->{ false_discovery_rate } %\n" if exists $c_matrix->{ false_discovery_rate };
+        print "  False Omission Rate: $c_matrix->{ false_omission_rate } %\n" if exists $c_matrix->{ false_omission_rate };
+        print "  Balanced Accuracy: $c_matrix->{ balanced_accuracy } %\n" if exists $c_matrix->{ balanced_accuracy };
+        print "~~" x24, "\n";
+
+    }
+    
 }
 
 =head1 NERVE DATA RELATED SUBROUTINES
