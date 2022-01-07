@@ -30,12 +30,12 @@ my %WriteMakefileArgs = (
         'List::Util' => '0',
         'Term::ANSIColor::WithWin32' => '0',
     },
-    META_MERGE => {
+    META_ADD => {
       resources => {
         repository => {
             type => 'git',
             url => 'git://github.com/Ellednera/AI-Perceptron-Simple.git',
-            web => 'https://github.com/Ellednera/AI-Perceptron-Simple.git',
+            web => 'https://github.com/Ellednera/AI-Perceptron-Simple',
         },
       },
     },    
