@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title></title>
+<title>AI::Perceptron::Simple - A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neurons</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rev="made" href="mailto:root@localhost" />
 </head>
@@ -43,8 +43,7 @@
       <li><a href="#exercise">exercise ( ... )</a></li>
       <li><a href="#train-stimuli_train_csv-expected_output_header-save_nerve_to_file">train ( $stimuli_train_csv, $expected_output_header, $save_nerve_to_file )</a></li>
       <li><a href="#train-stimuli_train_csv-expected_output_header-save_nerve_to_file-display_stats-identifier">train ( $stimuli_train_csv, $expected_output_header, $save_nerve_to_file, $display_stats, $identifier )</a></li>
-      <li><a href="#calculate_output-self-stimuli_hash">&amp;_calculate_output( $self, \%stimuli_hash )</a></li>
-      <li><a href="#tune-self-stimuli_hash-tune_up_or_down">&amp;_tune( $self, \%stimuli_hash, $tune_up_or_down )</a></li>
+      <li><a href="#PRIVATE-SUBROUTINES-METHODS">PRIVATE SUBROUTINES/METHODS</a></li>
     </ul>
   </li>
   <li><a href="#VALIDATION-RELATED-METHODS">VALIDATION RELATED METHODS</a>
@@ -59,32 +58,17 @@
       <li><a href="#take_real_exam">take_real_exam (...)</a></li>
       <li><a href="#work_in_real_world">work_in_real_world (...)</a></li>
       <li><a href="#test-options">test ( \%options )</a></li>
-      <li><a href="#real_validate_or_test-data_hash_ref">_real_validate_or_test ( $data_hash_ref )</a></li>
-      <li><a href="#fill_predicted_values-self-stimuli_validate-predicted_index-aoa">&amp;_fill_predicted_values ( $self, $stimuli_validate, $predicted_index, $aoa )</a></li>
+      <li><a href="#PRIVATE-SUBROUTINES">PRIVATE SUBROUTINES</a></li>
     </ul>
   </li>
   <li><a href="#RESULTS-RELATED-SUBROUTINES-METHODS">RESULTS RELATED SUBROUTINES/METHODS</a>
     <ul>
       <li><a href="#get_exam_results">get_exam_results ( ... )</a></li>
       <li><a href="#get_confusion_matrix-options">get_confusion_matrix ( \%options )</a></li>
-      <li><a href="#collect_stats-options">&amp;_collect_stats ( \%options )</a></li>
-      <li><a href="#calculate_total_entries-c_matrix_ref">&amp;_calculate_total_entries ( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_accuracy-c_matrix_ref">&amp;_calculate_accuracy ( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_sensitivity-c_matrix_ref">&amp;_calculate_sensitivity ( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_precision-c_matrix_ref">&amp;_calculate_precision ( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_specificity-c_matrix_ref">&amp;_calculate_specificity ( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_f1_score-c_matrix_ref">&amp;_calculate_f1_score ( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_negative_predicted_value-c_matrix_ref">&amp;_calculate_negative_predicted_value( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_false_negative_rate-c_matrix_ref">&amp;_calculate_false_negative_rate( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_false_positive_rate-c_matrix_ref">&amp;_calculate_false_positive_rate( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_false_discovery_rate-c_matrix_ref">&amp;_calculate_false_discovery_rate( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_false_omission_rate-c_matrix_ref">&amp;_calculate_false_omission_rate( $c_matrix_ref )</a></li>
-      <li><a href="#calculate_balanced_accuracy-c_matrix_ref">&amp;_calculate_balanced_accuracy( $c_matrix_ref )</a></li>
+      <li><a href="#PRIVATE-SUBROUTINES---GET-CONFUSION-MATRIX">PRIVATE SUBROUTINES - GET CONFUSION MATRIX</a></li>
       <li><a href="#display_exam_results">display_exam_results ( ... )</a></li>
       <li><a href="#display_confusion_matrix-confusion_matrix-labels">display_confusion_matrix ( \%confusion_matrix, \%labels )</a></li>
-      <li><a href="#build_matrix-c_matrix-labels">&amp;_build_matrix ( $c_matrix, $labels )</a></li>
-      <li><a href="#build_colored_matrix-c_matrix-labels_color">&amp;_build_colored_matrix ( $c_matrix, $labels_color )</a></li>
-      <li><a href="#print_extended_matrix-matrix-c_matrix-colorised">&amp;_print_extended_matrix ( $matrix, $c_matrix, $colorised )</a></li>
+      <li><a href="#PRIVATE-SUBROUTINES---DISPLAY-CONFUSION-MATRIX">PRIVATE SUBROUTINES - DISPLAY CONFUSION MATRIX</a></li>
     </ul>
   </li>
   <li><a href="#NERVE-DATA-RELATED-SUBROUTINES">NERVE DATA RELATED SUBROUTINES</a>
@@ -119,9 +103,7 @@
 
 <h1 id="NAME">NAME</h1>
 
-<p>AI::Perceptron::Simple</p>
-
-<p>A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neurons</p>
+<p>AI::Perceptron::Simple - A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neurons</p>
 
 <h1 id="VERSION">VERSION</h1>
 
@@ -280,7 +262,9 @@
 
 <p>Any field ie columns that will be used for processing must be binary ie. <code>0</code> or <code>1</code> only. Your dataset can contain other columns with non-binary data as long as they are not one of the dendrites.</p>
 
-<p>There are soem sample dataset which can be found in the <code>t</code> directory. The original dataset can also be found in <code>docs/book_list.csv</code>. The files can also be found <a href="https://github.com/Ellednera/AI-Perceptron-Simple">here</a>.</p>
+<p>There are some sample dataset which can be found in the <code>t</code> directory. The original dataset can also be found in <code>docs/book_list.csv</code>. The files can also be found <a href="https://github.com/Ellednera/AI-Perceptron-Simple">here</a>.</p>
+
+<p>More related stuff on how this module is used can also be found in another project <a href="https://github.com/Ellednera/Book-Categorizer">here</a>.</p>
 
 <h1 id="PERCEPTRON-DATA">PERCEPTRON DATA</h1>
 
@@ -416,7 +400,12 @@
 
 <p>If <code>$display_stats</code> is specified ie. set to <code>1</code>, then you <b>MUST</b> specify the <code>$identifier</code>. <code>$identifier</code> is the column / header name that is used to identify a specific row of data in <code>$stimuli_train_csv</code>.</p>
 
-<h2 id="calculate_output-self-stimuli_hash">&amp;_calculate_output( $self, \%stimuli_hash )</h2>
+<h2 id="PRIVATE-SUBROUTINES-METHODS">PRIVATE SUBROUTINES/METHODS</h2>
+
+<dl>
+
+<dt id="calculate_output-self-stimuli_hash">&amp;_calculate_output( $self, \%stimuli_hash )</dt>
+<dd>
 
 <p>Calculates and returns the <code>sum(weightage*input)</code> for each individual row of data. Actually, it justs add up all the existing weight since the <code>input</code> is always 1 for now :)</p>
 
@@ -426,7 +415,9 @@
 
 <p>This subroutine should be called in the procedural way for now.</p>
 
-<h2 id="tune-self-stimuli_hash-tune_up_or_down">&amp;_tune( $self, \%stimuli_hash, $tune_up_or_down )</h2>
+</dd>
+<dt id="tune-self-stimuli_hash-tune_up_or_down">&amp;_tune( $self, \%stimuli_hash, $tune_up_or_down )</dt>
+<dd>
 
 <p>Fine tunes the nerve. This will directly alter the attributes values in <code>$self</code> according to the attributes / dendrites specified in <code>new</code>.</p>
 
@@ -453,6 +444,9 @@
 </dl>
 
 <p>This subroutine should be called in the procedural way for now.</p>
+
+</dd>
+</dl>
 
 <h1 id="VALIDATION-RELATED-METHODS">VALIDATION RELATED METHODS</h1>
 
@@ -516,7 +510,12 @@
 
 <p><i>*This method will call &amp;_real_validate_or_test to do the actual work.</i></p>
 
-<h2 id="real_validate_or_test-data_hash_ref">_real_validate_or_test ( $data_hash_ref )</h2>
+<h2 id="PRIVATE-SUBROUTINES">PRIVATE SUBROUTINES</h2>
+
+<dl>
+
+<dt id="real_validate_or_test-data_hash_ref">_real_validate_or_test ( $data_hash_ref )</dt>
+<dd>
 
 <p>This is where the actual validation or testing takes place.</p>
 
@@ -524,11 +523,16 @@
 
 <p>This is a <b>method</b>, so use the OO way. This is one of the exceptions to the rules where private subroutines are treated as methods :)</p>
 
-<h2 id="fill_predicted_values-self-stimuli_validate-predicted_index-aoa">&amp;_fill_predicted_values ( $self, $stimuli_validate, $predicted_index, $aoa )</h2>
+</dd>
+<dt id="fill_predicted_values-self-stimuli_validate-predicted_index-aoa">&amp;_fill_predicted_values ( $self, $stimuli_validate, $predicted_index, $aoa )</dt>
+<dd>
 
 <p>This is where the filling in of the predicted values takes place. Take note that the parameters naming are the same as the ones used in the <code>validate</code> and <code>test</code> method.</p>
 
 <p>This subroutine should be called in the procedural way.</p>
+
+</dd>
+</dl>
 
 <h1 id="RESULTS-RELATED-SUBROUTINES-METHODS">RESULTS RELATED SUBROUTINES/METHODS</h1>
 
@@ -540,9 +544,9 @@
 
 <h2 id="get_confusion_matrix-options">get_confusion_matrix ( \%options )</h2>
 
-<p>Returns the confusion matrix in the form of a hash. The hash will contain these keys: <code>true_positive</code>, <code>true_negative</code>, <code>false_positive</code>, <code>false_negative</code>, <code>accuracy</code>, <code>sensitivity</code>. More stats like <code>precision</code>, <code>specificity</code> and <code>F1_Score</code> can be obtain by setting the optional <code>more_stats</code> key to <code>1</code>.</p>
+<p>Returns the confusion matrix in the form of a hash. The hash will contain these keys: <code>true_positive</code>, <code>true_negative</code>, <code>false_positive</code>, <code>false_negative</code>, <code>accuracy</code>, <code>sensitivity</code>. More stats like <code>precision</code>, <code>specificity</code> and <code>F1_Score</code> etc. can be obtain by setting the optional <code>more_stats</code> key to <code>1</code>. The additional stats will be shown no matter what. But if the <code>more_stats</code> key is not set to a true value, it will just output <code>N/A</code></p>
 
-<p>If you are trying to manipulate the confusion matrix hash or something, take note that all the stats are in percentage (%) in decimal (if any) except the total entries.</p>
+<p>If you are trying to manipulate the confusion matrix hash or something, take note that all the stats are calculated in percentage (%) and in decimal (if any).</p>
 
 <p>For <code>%options</code>, the followings are needed unless mentioned:</p>
 
@@ -583,62 +587,134 @@
 
 <p>Optional.</p>
 
-<p>Setting it to <code>1</code> will process more stats that are usually not so important eg. <code>precision</code>, <code>specificity</code> and <code>F1_Score</code></p>
+<p>Setting it to <code>1</code> will process more stats that are usually not so important. These stats include:</p>
+
+<dl>
+
+<dt id="Precision">Precision</dt>
+<dd>
+
+</dd>
+<dt id="Specificity">Specificity</dt>
+<dd>
+
+</dd>
+<dt id="F1-Score">F1 Score</dt>
+<dd>
+
+</dd>
+<dt id="Negative-predicted-value">Negative predicted value</dt>
+<dd>
+
+</dd>
+<dt id="False-negative-rate">False negative rate</dt>
+<dd>
+
+</dd>
+<dt id="False-positive-rate">False positive rate</dt>
+<dd>
+
+</dd>
+<dt id="False-discovery-rate">False discovery rate</dt>
+<dd>
+
+</dd>
+<dt id="False-omission-rate">False omission rate</dt>
+<dd>
+
+</dd>
+<dt id="Balanced-accuracy">Balanced accuracy</dt>
+<dd>
 
 </dd>
 </dl>
 
-<h2 id="collect_stats-options">&amp;_collect_stats ( \%options )</h2>
+</dd>
+</dl>
+
+<h2 id="PRIVATE-SUBROUTINES---GET-CONFUSION-MATRIX">PRIVATE SUBROUTINES - GET CONFUSION MATRIX</h2>
+
+<dl>
+
+<dt id="collect_stats-options">&amp;_collect_stats ( \%options )</dt>
+<dd>
 
 <p>Generates a hash of confusion matrix based on <code>%options</code> given in the <code>get_confusion_matrix</code> method.</p>
 
-<h2 id="calculate_total_entries-c_matrix_ref">&amp;_calculate_total_entries ( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_total_entries-c_matrix_ref">&amp;_calculate_total_entries ( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>total_entries</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_accuracy-c_matrix_ref">&amp;_calculate_accuracy ( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_accuracy-c_matrix_ref">&amp;_calculate_accuracy ( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>accuracy</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_sensitivity-c_matrix_ref">&amp;_calculate_sensitivity ( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_sensitivity-c_matrix_ref">&amp;_calculate_sensitivity ( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>sensitivity</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_precision-c_matrix_ref">&amp;_calculate_precision ( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_precision-c_matrix_ref">&amp;_calculate_precision ( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>precision</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_specificity-c_matrix_ref">&amp;_calculate_specificity ( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_specificity-c_matrix_ref">&amp;_calculate_specificity ( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>specificity</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_f1_score-c_matrix_ref">&amp;_calculate_f1_score ( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_f1_score-c_matrix_ref">&amp;_calculate_f1_score ( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>F1_Score</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_negative_predicted_value-c_matrix_ref">&amp;_calculate_negative_predicted_value( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_negative_predicted_value-c_matrix_ref">&amp;_calculate_negative_predicted_value( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>negative_predicted_value</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_false_negative_rate-c_matrix_ref">&amp;_calculate_false_negative_rate( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_false_negative_rate-c_matrix_ref">&amp;_calculate_false_negative_rate( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>false_negative_rate</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_false_positive_rate-c_matrix_ref">&amp;_calculate_false_positive_rate( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_false_positive_rate-c_matrix_ref">&amp;_calculate_false_positive_rate( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>false_positive_rate</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_false_discovery_rate-c_matrix_ref">&amp;_calculate_false_discovery_rate( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_false_discovery_rate-c_matrix_ref">&amp;_calculate_false_discovery_rate( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>false_discovery_rate</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_false_omission_rate-c_matrix_ref">&amp;_calculate_false_omission_rate( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_false_omission_rate-c_matrix_ref">&amp;_calculate_false_omission_rate( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>false_omission_rate</code> key in the confusion matrix hash.</p>
 
-<h2 id="calculate_balanced_accuracy-c_matrix_ref">&amp;_calculate_balanced_accuracy( $c_matrix_ref )</h2>
+</dd>
+<dt id="calculate_balanced_accuracy-c_matrix_ref">&amp;_calculate_balanced_accuracy( $c_matrix_ref )</dt>
+<dd>
 
 <p>Calculates and adds the data for the <code>balanced_accuracy</code> key in the confusion matrix hash.</p>
+
+</dd>
+</dl>
 
 <h2 id="display_exam_results">display_exam_results ( ... )</h2>
 
@@ -667,7 +743,7 @@
 
 <p>Optional and experimental.</p>
 
-<p>Setting this to 1 or any true values will colorise some the output for the confusion matrix.</p>
+<p>Setting this to 1 or any true values will colorise most the output for the confusion matrix.</p>
 
 <p>The output is somewhat off at the moment :)</p>
 
@@ -676,9 +752,14 @@
 
 <p>Please take note that non-ascii characters ie. non-English alphabets and asci colors <b>might</b> cause the output to go off :)</p>
 
-<p>For the <code>%labels</code>, there is no need to enter &quot;actual X&quot;, &quot;predicted X&quot; etc. It will be prefixed with <code>A: </code> for actual and <code>P: </code> for the predicted values by default.</p>
+<p>For the <code>%labels</code>, there is no need to enter &quot;actual X&quot;, &quot;predicted X&quot; etc. It will be prefixed with <code>A: </code> for the actual label and <code>P: </code> for the predicted label.</p>
 
-<h2 id="build_matrix-c_matrix-labels">&amp;_build_matrix ( $c_matrix, $labels )</h2>
+<h2 id="PRIVATE-SUBROUTINES---DISPLAY-CONFUSION-MATRIX">PRIVATE SUBROUTINES - DISPLAY CONFUSION MATRIX</h2>
+
+<dl>
+
+<dt id="build_matrix-c_matrix-labels">&amp;_build_matrix ( $c_matrix, $labels )</dt>
+<dd>
 
 <p>Builds the matrix using <code>Text::Matrix</code> module.</p>
 
@@ -686,7 +767,9 @@
 
 <p>Returns a list <code>( $matrix, $c_matrix )</code> which can directly be passed to <code>_print_extended_matrix</code>.</p>
 
-<h2 id="build_colored_matrix-c_matrix-labels_color">&amp;_build_colored_matrix ( $c_matrix, $labels_color )</h2>
+</dd>
+<dt id="build_colored_matrix-c_matrix-labels_color">&amp;_build_colored_matrix ( $c_matrix, $labels_color )</dt>
+<dd>
 
 <p>Builds the matrix using <code>Text::Matrix</code> module but with colors.</p>
 
@@ -696,13 +779,18 @@
 
 <p>Returns a list <code>( $matrix, $c_matrix )</code> which can directly be passed to <code>_print_extended_matrix</code>.</p>
 
-<h2 id="print_extended_matrix-matrix-c_matrix-colorised">&amp;_print_extended_matrix ( $matrix, $c_matrix, $colorised )</h2>
+</dd>
+<dt id="print_extended_matrix-matrix-c_matrix-colorised">&amp;_print_extended_matrix ( $matrix, $c_matrix, $colorised )</dt>
+<dd>
 
 <p>Extends and outputs the matrix on the screen.</p>
 
 <p><code>$matrix</code> and <code>$c_matrix</code> are the same as returned by <code>&amp;_build_matrix</code>.</p>
 
 <p><code>$colorised</code> is optional and only used to check if the matrix is colored.</p>
+
+</dd>
+</dl>
 
 <h1 id="NERVE-DATA-RELATED-SUBROUTINES">NERVE DATA RELATED SUBROUTINES</h1>
 
@@ -835,7 +923,7 @@
 
 <h1 id="SEE-ALSO">SEE ALSO</h1>
 
-<p>AI::Perceptron, Text::Matrix, YAML</p>
+<p>AI::Perceptron, Text::Matrix, Text::CSV, YAML</p>
 
 <h1 id="LICENSE-AND-COPYRIGHT">LICENSE AND COPYRIGHT</h1>
 
