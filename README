@@ -1,8 +1,8 @@
-AI-Perceptron-Simple (v1.04)
+AI-Perceptron-Simple (v1.05)
 
 A Newbie Friendly Module to Create, Train, Validate and Test Perceptrons / Neurons
 
-This module provides methods to build, train, validate and test a perceptron. It can also save the data of the perceptron for future use for any actual AI programs.
+This module allows you to build, train, validate and test neurons. It can also save the data of the trained neurons for future use.
 
 This module is also aimed to help newbies grasp hold of the concept of perceptron, training, validation and testing as much as possible. Hence, all the methods and subroutines in this module are decoupled as much as possible so that the actual scripts can be written as simple complete programs.
 
