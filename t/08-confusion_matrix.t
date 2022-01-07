@@ -61,19 +61,6 @@ like ( $c_matrix{ accuracy }, qr/60/, "'illegal' calculation of sensitivity seem
     like ( $@, qr/Something\'s wrong\!/, "Croaked! Found non-binary values in file");
 }
 
-my $piece;
-my @pieces = ('A: ', 'P: ', 'actual', 'predicted', 'entries', 'Accuracy', 'Sensitivity', 'MP520', 'Yi Lin');
-
-for $piece ( @pieces ) {
-    stdout_like {
-    
-        ok ( $perceptron->display_exam_results( \%c_matrix, { zero_as => "MP520", one_as => "Yi Lin"  } ),
-            "display_exam_results is working");
-        
-    } qr /(?:$piece)/, "$piece displayed";
-
-}
-
 {
     local $@;
     
@@ -150,7 +137,7 @@ subtest "More stats" => sub {
             ok ( $perceptron->display_exam_results( \%c_matrix_more_stats, { 
                     zero_as => "MP520", one_as => "Yi Lin",
                     colorise => 1  } ),
-                "display_exam_results with color is working");
+                "display_exam_results with color working but color not checked :)");
             
         } qr /(?:$piece)/, "$piece displayed";
 
@@ -161,6 +148,48 @@ subtest "More stats" => sub {
     #    colorise => 1  } );
 };
 
+# less stats
+
+subtest "Less stats but additional stats are N/A" => sub {
+
+    my %c_matrix_more_stats = $perceptron->get_confusion_matrix( { 
+            full_data_file => TEST_FILE, 
+            actual_output_header => "brand",
+            predicted_output_header => "predicted",
+            #more_stats => 1,
+        } );
+
+    my $piece;
+    my @pieces = ('A: ', 'P: ', 'actual', 'predicted', 'entries', 'Accuracy', 'Sensitivity', 'MP520', 'Yi Lin', "Precision", "Specificity", "F1 Score", "Negative Predicted Value", "False Negative Rate", "False Positive Rate", "False Discovery Rate", "False Omission Rate", "Balanced Accuracy");
+
+    # confusion matrix table
+    for $piece ( @pieces ) {
+        stdout_like {
+        
+            ok ( $perceptron->display_exam_results( \%c_matrix_more_stats, { zero_as => "MP520", one_as => "Yi Lin"  } ),
+                "display_exam_results is working");
+            
+        } qr /(?:$piece)/, "$piece displayed for less stats situation";
+
+    }
+    
+    # other stats
+    for $piece ( @pieces ) {
+        stdout_like {
+        
+            ok ( $perceptron->display_exam_results( \%c_matrix_more_stats, { 
+                    zero_as => "MP520", one_as => "Yi Lin",
+                    colorise => 1  } ),
+                "display_exam_results with color working but color not checked :)");
+            
+        } qr /(?:$piece)/, "$piece displayed";
+
+    }
+    
+    #$perceptron->display_exam_results( \%c_matrix_more_stats, { 
+    #    zero_as => "MP520", one_as => "Yi Lin",
+    #    colorise => 1  } );
+};
 
 
 done_testing;
