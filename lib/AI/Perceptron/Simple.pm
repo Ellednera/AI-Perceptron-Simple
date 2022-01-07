@@ -199,7 +199,9 @@ I<This module can only process CSV files.>
 
 Any field ie columns that will be used for processing must be binary ie. C<0> or C<1> only. Your dataset can contain other columns with non-binary data as long as they are not one of the dendrites.
 
-There are soem sample dataset which can be found in the C<t> directory. The original dataset can also be found in C<docs/book_list.csv>. The files can also be found L<here|https://github.com/Ellednera/AI-Perceptron-Simple>.
+There are some sample dataset which can be found in the C<t> directory. The original dataset can also be found in C<docs/book_list.csv>. The files can also be found L<here|https://github.com/Ellednera/AI-Perceptron-Simple>.
+
+More related stuff on how this module is used can also be found in another project L<here|https://github.com/Ellednera/Book-Categorizer>.
 
 =head1 PERCEPTRON DATA
 
@@ -517,7 +519,11 @@ sub train {
     
 }
 
-=head2 &_calculate_output( $self, \%stimuli_hash )
+=head2 PRIVATE SUBROUTINES/METHODS
+
+=over 4
+
+=item &_calculate_output( $self, \%stimuli_hash )
 
 Calculates and returns the C<sum(weightage*input)> for each individual row of data. Actually, it justs add up all the existing weight since the C<input> is always 1 for now :)
 
@@ -548,7 +554,7 @@ sub _calculate_output {
     $sum;
 }
 
-=head2 &_tune( $self, \%stimuli_hash, $tune_up_or_down )
+=item &_tune( $self, \%stimuli_hash, $tune_up_or_down )
 
 Fine tunes the nerve. This will directly alter the attributes values in C<$self> according to the attributes / dendrites specified in C<new>.
 
@@ -571,6 +577,8 @@ Value is C<0>
 =back
 
 This subroutine should be called in the procedural way for now.
+
+=back
 
 =cut
 
@@ -692,7 +700,11 @@ sub test {
     $self->_real_validate_or_test( $data_hash_ref );
 }
 
-=head2 _real_validate_or_test ( $data_hash_ref )
+=head2 PRIVATE SUBROUTINES
+
+=over 4
+
+=item _real_validate_or_test ( $data_hash_ref )
 
 This is where the actual validation or testing takes place. 
 
@@ -739,11 +751,13 @@ sub _real_validate_or_test {
 
 }
 
-=head2 &_fill_predicted_values ( $self, $stimuli_validate, $predicted_index, $aoa )
+=item &_fill_predicted_values ( $self, $stimuli_validate, $predicted_index, $aoa )
 
 This is where the filling in of the predicted values takes place. Take note that the parameters naming are the same as the ones used in the C<validate> and C<test> method.
 
 This subroutine should be called in the procedural way.
+
+=back
 
 =cut
 
@@ -790,9 +804,9 @@ The parameters and usage are the same as C<get_confusion_matrix>. See the next m
 
 =head2 get_confusion_matrix ( \%options )
 
-Returns the confusion matrix in the form of a hash. The hash will contain these keys: C<true_positive>, C<true_negative>, C<false_positive>, C<false_negative>, C<accuracy>, C<sensitivity>. More stats like C<precision>, C<specificity> and C<F1_Score> can be obtain by setting the optional C<more_stats> key to C<1>.
+Returns the confusion matrix in the form of a hash. The hash will contain these keys: C<true_positive>, C<true_negative>, C<false_positive>, C<false_negative>, C<accuracy>, C<sensitivity>. More stats like C<precision>, C<specificity> and C<F1_Score> etc. can be obtain by setting the optional C<more_stats> key to C<1>. The additional stats will be shown no matter what. But if the C<more_stats> key is not set to a true value, it will just output C<N/A>
 
-If you are trying to manipulate the confusion matrix hash or something, take note that all the stats are in percentage (%) in decimal (if any) except the total entries.
+If you are trying to manipulate the confusion matrix hash or something, take note that all the stats are calculated in percentage (%) and in decimal (if any).
 
 For C<%options>, the followings are needed unless mentioned:
 
@@ -822,7 +836,29 @@ The binary values are treated as follows:
 
 Optional.
 
-Setting it to C<1> will process more stats that are usually not so important eg. C<precision>, C<specificity> and C<F1_Score>
+Setting it to C<1> will process more stats that are usually not so important. These stats include:
+
+=over 4
+
+=item Precision
+
+=item Specificity
+
+=item F1 Score
+
+=item Negative predicted value
+
+=item False negative rate
+
+=item False positive rate
+
+=item False discovery rate
+
+=item False omission rate
+
+=item Balanced accuracy
+
+=back
 
 =back
 
@@ -844,8 +880,11 @@ sub get_confusion_matrix {
     %c_matrix;
 }
 
+=head2 PRIVATE SUBROUTINES - GET CONFUSION MATRIX
 
-=head2 &_collect_stats ( \%options )
+=over 4
+
+=item &_collect_stats ( \%options )
 
 Generates a hash of confusion matrix based on C<%options> given in the C<get_confusion_matrix> method.
 
@@ -856,7 +895,7 @@ sub _collect_stats {
     my $file = $info->{ full_data_file };
     my $actual_header = $info->{ actual_output_header };
     my $predicted_header = $info->{ predicted_output_header };
-    my $more_stats = defined ( $info->{ more_stats } ) ? 1 : 0;
+    my $more_stats = ( defined ( $info->{ more_stats } ) && $info->{ more_stats } == 1) ? 1 : 0;
     
     my %c_matrix = ( 
         true_positive => 0, true_negative => 0, false_positive => 0, false_negative => 0,
@@ -933,7 +972,7 @@ sub _collect_stats {
     %c_matrix;
 }
 
-=head2 &_calculate_total_entries ( $c_matrix_ref )
+=item &_calculate_total_entries ( $c_matrix_ref )
 
 Calculates and adds the data for the C<total_entries> key in the confusion matrix hash.
 
@@ -949,7 +988,7 @@ sub _calculate_total_entries {
 
 }
 
-=head2 &_calculate_accuracy ( $c_matrix_ref )
+=item &_calculate_accuracy ( $c_matrix_ref )
 
 Calculates and adds the data for the C<accuracy> key in the confusion matrix hash.
 
@@ -967,7 +1006,7 @@ sub _calculate_accuracy {
     # no need to return anything, we're using ref
 }
 
-=head2 &_calculate_sensitivity ( $c_matrix_ref )
+=item &_calculate_sensitivity ( $c_matrix_ref )
 
 Calculates and adds the data for the C<sensitivity> key in the confusion matrix hash.
 
@@ -984,7 +1023,7 @@ sub _calculate_sensitivity {
     # no need to return anything, we're using ref
 }
 
-=head2 &_calculate_precision ( $c_matrix_ref )
+=item &_calculate_precision ( $c_matrix_ref )
 
 Calculates and adds the data for the C<precision> key in the confusion matrix hash.
 
@@ -999,7 +1038,7 @@ sub _calculate_precision {
     $c_matrix->{ precision } = $numerator / $denominator * 100;
 }
 
-=head2 &_calculate_specificity ( $c_matrix_ref )
+=item &_calculate_specificity ( $c_matrix_ref )
 
 Calculates and adds the data for the C<specificity> key in the confusion matrix hash.
 
@@ -1014,7 +1053,7 @@ sub _calculate_specificity {
     $c_matrix->{ specificity } = $numerator / $denominator * 100;
 }
 
-=head2 &_calculate_f1_score ( $c_matrix_ref )
+=item &_calculate_f1_score ( $c_matrix_ref )
 
 Calculates and adds the data for the C<F1_Score> key in the confusion matrix hash.
 
@@ -1029,7 +1068,7 @@ sub _calculate_f1_score {
     $c_matrix->{ F1_Score } = $numerator / $denominator * 100;
 }       
 
-=head2  &_calculate_negative_predicted_value( $c_matrix_ref )
+=item  &_calculate_negative_predicted_value( $c_matrix_ref )
 
 Calculates and adds the data for the C<negative_predicted_value> key in the confusion matrix hash.
 
@@ -1044,7 +1083,7 @@ sub _calculate_negative_predicted_value {
     $c_matrix->{ negative_predicted_value } = $numerator / $denominator * 100;
 }
 
-=head2  &_calculate_false_negative_rate( $c_matrix_ref )
+=item  &_calculate_false_negative_rate( $c_matrix_ref )
 
 Calculates and adds the data for the C<false_negative_rate> key in the confusion matrix hash.
 
@@ -1059,7 +1098,7 @@ sub _calculate_false_negative_rate {
     $c_matrix->{ false_negative_rate } = $numerator / $denominator * 100;
 }
 
-=head2  &_calculate_false_positive_rate( $c_matrix_ref )
+=item  &_calculate_false_positive_rate( $c_matrix_ref )
 
 Calculates and adds the data for the C<false_positive_rate> key in the confusion matrix hash.
 
@@ -1074,7 +1113,7 @@ sub _calculate_false_positive_rate {
     $c_matrix->{ false_positive_rate } = $numerator / $denominator * 100;
 }
 
-=head2  &_calculate_false_discovery_rate( $c_matrix_ref )
+=item  &_calculate_false_discovery_rate( $c_matrix_ref )
 
 Calculates and adds the data for the C<false_discovery_rate> key in the confusion matrix hash.
 
@@ -1089,7 +1128,7 @@ sub _calculate_false_discovery_rate {
     $c_matrix->{ false_discovery_rate } = $numerator / $denominator * 100;
 }
 
-=head2  &_calculate_false_omission_rate( $c_matrix_ref )
+=item  &_calculate_false_omission_rate( $c_matrix_ref )
 
 Calculates and adds the data for the C<false_omission_rate> key in the confusion matrix hash.
 
@@ -1104,9 +1143,11 @@ sub _calculate_false_omission_rate {
     $c_matrix->{ false_omission_rate } = $numerator / $denominator * 100;
 }
 
-=head2  &_calculate_balanced_accuracy( $c_matrix_ref )
+=item  &_calculate_balanced_accuracy( $c_matrix_ref )
 
 Calculates and adds the data for the C<balanced_accuracy> key in the confusion matrix hash.
+
+=back
 
 =cut
 
@@ -1141,7 +1182,7 @@ For C<%labels>, since C<0>'s and C<1>'s won't make much sense as the output labe
 
 Optional and experimental.
 
-Setting this to 1 or any true values will colorise some the output for the confusion matrix.
+Setting this to 1 or any true values will colorise most the output for the confusion matrix.
 
 The output is somewhat off at the moment :)
 
@@ -1149,7 +1190,7 @@ The output is somewhat off at the moment :)
 
 Please take note that non-ascii characters ie. non-English alphabets and asci colors B<might> cause the output to go off :)
 
-For the C<%labels>, there is no need to enter "actual X", "predicted X" etc. It will be prefixed with C<A: > for actual and C<P: > for the predicted values by default.
+For the C<%labels>, there is no need to enter "actual X", "predicted X" etc. It will be prefixed with C<A: > for the actual label and C<P: > for the predicted label.
 
 =cut
 
@@ -1180,7 +1221,11 @@ sub display_confusion_matrix {
 
 }
 
-=head2 &_build_matrix ( $c_matrix, $labels )
+=head2 PRIVATE SUBROUTINES - DISPLAY CONFUSION MATRIX
+
+=over 4
+
+=item &_build_matrix ( $c_matrix, $labels )
 
 Builds the matrix using C<Text::Matrix> module.
 
@@ -1218,7 +1263,7 @@ sub _build_matrix {
     $matrix, $c_matrix;    
 }
 
-=head2 &_build_colored_matrix ( $c_matrix, $labels_color )
+=item &_build_colored_matrix ( $c_matrix, $labels_color )
 
 Builds the matrix using C<Text::Matrix> module but with colors.
 
@@ -1280,13 +1325,15 @@ sub _build_colored_matrix {
     $matrix, $c_matrix, $labels->{ colorise };
 }
 
-=head2 &_print_extended_matrix ( $matrix, $c_matrix, $colorised )
+=item &_print_extended_matrix ( $matrix, $c_matrix, $colorised )
 
 Extends and outputs the matrix on the screen.
 
 C<$matrix> and C<$c_matrix> are the same as returned by C<&_build_matrix>.
 
 C<$colorised> is optional and only used to check if the matrix is colored.
+
+=back
 
 =cut
 
@@ -1323,19 +1370,23 @@ sub _print_extended_matrix {
             
         # more stats
         if ( exists $c_matrix->{ precision } ) {
-            
+        
             print "  Precision: ",
                 $c_matrix->{ precision } >= 50
                 ? colored($c_matrix->{ precision }." %", $above_equal_50) 
                 : colored($c_matrix->{ precision }." %", $below_50),"\n";
+        } else {
+            print "  Precision: N/A\n";
         }
         
         if ( exists $c_matrix->{ specificity } ) {
-            
+        
             print "  Specificity: ",
                 $c_matrix->{ specificity } >= 50
                 ? colored($c_matrix->{ specificity }." %", $above_equal_50) 
                 : colored($c_matrix->{ specificity }." %", $below_50),"\n";
+        } else {
+            print "  Specificity: N/A\n";
         }
 
         if ( exists $c_matrix->{ F1_Score } ) {
@@ -1344,6 +1395,8 @@ sub _print_extended_matrix {
                 $c_matrix->{ F1_Score } >= 50
                 ? colored($c_matrix->{ F1_Score }." %", $above_equal_50) 
                 : colored($c_matrix->{ F1_Score }." %", $below_50),"\n";
+        } else {
+            print "  F1 Score: N/A\n";
         }
 
         if ( exists $c_matrix->{ negative_predicted_value } ) {
@@ -1352,6 +1405,8 @@ sub _print_extended_matrix {
                 $c_matrix->{ negative_predicted_value } >= 50
                 ? colored($c_matrix->{ negative_predicted_value }." %", $above_equal_50) 
                 : colored($c_matrix->{ negative_predicted_value }." %", $below_50),"\n";
+        } else {
+            print "  Negative Predicted Value: N/A\n";
         }
 
         if ( exists $c_matrix->{ false_negative_rate } ) {
@@ -1360,6 +1415,8 @@ sub _print_extended_matrix {
                 $c_matrix->{ false_negative_rate } >= 50
                 ? colored($c_matrix->{ false_negative_rate }." %", $above_equal_50) 
                 : colored($c_matrix->{ false_negative_rate }." %", $below_50),"\n";
+        } else {
+            print "  False Negative Rate: N/A\n";
         }
 
         if ( exists $c_matrix->{ false_positive_rate } ) {
@@ -1368,6 +1425,8 @@ sub _print_extended_matrix {
                 $c_matrix->{ false_positive_rate } >= 50
                 ? colored($c_matrix->{ false_positive_rate }." %", $above_equal_50) 
                 : colored($c_matrix->{ false_positive_rate }." %", $below_50),"\n";
+        } else {
+            print "  False Positive Rate: N/A\n";
         }
 
         if ( exists $c_matrix->{ false_discovery_rate } ) {
@@ -1376,6 +1435,8 @@ sub _print_extended_matrix {
                 $c_matrix->{ false_discovery_rate } >= 50
                 ? colored($c_matrix->{ false_discovery_rate }." %", $above_equal_50) 
                 : colored($c_matrix->{ false_discovery_rate }." %", $below_50),"\n";
+        } else {
+            print "  False Discovery Rate: N/A\n";
         }
         
         if ( exists $c_matrix->{ false_omission_rate } ) {
@@ -1384,6 +1445,8 @@ sub _print_extended_matrix {
                 $c_matrix->{ false_omission_rate } >= 50
                 ? colored($c_matrix->{ false_omission_rate }." %", $above_equal_50) 
                 : colored($c_matrix->{ false_omission_rate }." %", $below_50),"\n";
+        } else {
+            print "  False Omission Rate: N/A\n";
         }
         
         if ( exists $c_matrix->{ balanced_accuracy } ) {
@@ -1392,6 +1455,8 @@ sub _print_extended_matrix {
                 $c_matrix->{ balanced_accuracy } >= 50
                 ? colored($c_matrix->{ balanced_accuracy }." %", $above_equal_50) 
                 : colored($c_matrix->{ balanced_accuracy }." %", $below_50),"\n";
+        } else {
+            print "  Balanced Accuracy: N/A\n";
         }
 
         print colored( $banner_lines, "yellow"), "\n";
@@ -1410,15 +1475,42 @@ sub _print_extended_matrix {
         print "  Accuracy: $c_matrix->{ accuracy } %\n";
         print "  Sensitivity: $c_matrix->{ sensitivity } %\n";
         # more stats
-        print "  Precision: $c_matrix->{ precision } %\n" if exists $c_matrix->{ precision };
-        print "  Specificity: $c_matrix->{ specificity } %\n" if exists $c_matrix->{ specificity };
-        print "  F1 Score: $c_matrix->{ F1_Score } %\n" if exists $c_matrix->{ F1_Score };
-        print "  Negative Predicted Value: $c_matrix->{ negative_predicted_value } %\n" if exists $c_matrix->{ negative_predicted_value };
-        print "  False Negative Rate: $c_matrix->{ false_negative_rate } %\n" if exists $c_matrix->{ false_negative_rate };
-        print "  False Positive Rate: $c_matrix->{ false_positive_rate } %\n" if exists $c_matrix->{ false_positive_rate };
-        print "  False Discovery Rate: $c_matrix->{ false_discovery_rate } %\n" if exists $c_matrix->{ false_discovery_rate };
-        print "  False Omission Rate: $c_matrix->{ false_omission_rate } %\n" if exists $c_matrix->{ false_omission_rate };
-        print "  Balanced Accuracy: $c_matrix->{ balanced_accuracy } %\n" if exists $c_matrix->{ balanced_accuracy };
+        exists $c_matrix->{ precision } 
+            ? print "  Precision: $c_matrix->{ precision } %\n"
+            : print "  Precision: N/A\n";
+            
+        exists $c_matrix->{ specificity }
+            ? print "  Specificity: $c_matrix->{ specificity } %\n"
+            : print "  Specificity: N/A\n";
+            
+        exists $c_matrix->{ F1_Score }
+            ? print "  F1 Score: $c_matrix->{ F1_Score } %\n"
+            : print "  F1 Score: N/A\n";
+        
+        exists $c_matrix->{ negative_predicted_value }
+            ? print "  Negative Predicted Value: $c_matrix->{ negative_predicted_value } %\n"
+            : print "  Negative Predicted Value: N/A\n";
+        
+        exists $c_matrix->{ false_negative_rate }
+            ? print "  False Negative Rate: $c_matrix->{ false_negative_rate } %\n"
+            : print "  False Negative Rate: N/A\n";
+        
+        exists $c_matrix->{ false_positive_rate }
+            ? print "  False Positive Rate: $c_matrix->{ false_positive_rate } %\n"
+            : print "  False Positive Rate: N/A\n";
+        
+        exists $c_matrix->{ false_discovery_rate }
+            ? print "  False Discovery Rate: $c_matrix->{ false_discovery_rate } %\n"
+            : print "  False Discovery Rate: N/A\n";
+        
+        exists $c_matrix->{ false_omission_rate }
+            ? print "  False Omission Rate: $c_matrix->{ false_omission_rate } %\n"
+            : print "  False Omission Rate: N/A\n";
+        
+        exists $c_matrix->{ balanced_accuracy }
+            ? print "  Balanced Accuracy: $c_matrix->{ balanced_accuracy } %\n"
+            : print "  Balanced Accuracy: N/A\n";
+        
         print "~~" x24, "\n";
 
     }
@@ -1609,7 +1701,7 @@ Besiyata d'shmaya, Wikipedia
 
 =head1 SEE ALSO
 
-AI::Perceptron, Text::Matrix, YAML
+AI::Perceptron, Text::Matrix, Text::CSV, YAML
 
 =head1 LICENSE AND COPYRIGHT
 
