@@ -81,12 +81,17 @@ done_testing;
 #
 # Version 1.05
 #   [v] colorise the confusion matrix if option is enabled
-#   -add public function:
-#       -predict result from non-csv input (single row), might be useful when gui is involved
+#   [] change the output of confusion matrix
+#   [v] confusion_matrix: show additional stats even if missing keys or more_stats is not set
+#   [] add public function:
+#       [] predict result from non-csv input (single row), might be useful when gui is involved
+#           [] create input file as YAML
+#           [] read & predict
+#   [v] "hide" all the private subroutines/methods from the list of links in POD
 #
 # Version 1.06
 #   -add a simple tutorial
-#   -smart tuning feature: automatically increase/decrease learning_rate in multiples in training stage
+#   -smart tuning feature? automatically increase/decrease learning_rate in multiples in training stage
 #
 # Version ?.??
 #   ? implement shuffling system into training stage, bulk data processing   
